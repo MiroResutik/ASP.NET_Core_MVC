@@ -1,7 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using WebMagazines.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Get the connection string from appsettings.json test
+var test = builder.Configuration.GetConnectionString("SQLConnection");
+
+// Set up default connection to Server SQL
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
 var app = builder.Build();
 
