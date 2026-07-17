@@ -20,14 +20,14 @@ namespace WebMagazines.Data
             //base.OnModelCreating(modelBuilder);
             // Configure the Category entity
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Adventure" },
-                new Category { Id = 2, Name = "Supersport" },
-                new Category { Id = 3, Name = "News" },
-                new Category { Id = 4, Name = "Classic" },
-                new Category { Id = 5, Name = "Off-Road" },
-                new Category { Id = 6, Name = "Customs" },
-                new Category { Id = 7, Name = "Electric" },
-                new Category { Id = 8, Name = "Commuter" }
+                new Category { Id = 1, Name = "Adventure", DisplayOrder=1 },
+                new Category { Id = 2, Name = "Supersport", DisplayOrder=2 },
+                new Category { Id = 3, Name = "News", DisplayOrder=3 },
+                new Category { Id = 4, Name = "Classic", DisplayOrder=4 },
+                new Category { Id = 5, Name = "Off-Road", DisplayOrder=5 },
+                new Category { Id = 6, Name = "Customs", DisplayOrder=6 },
+                new Category { Id = 7, Name = "Electric", DisplayOrder=7 },
+                new Category { Id = 8, Name = "Commuter", DisplayOrder=8 }
 
                 );
         }

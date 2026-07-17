@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebMagazines.Data;
 
@@ -10,9 +11,11 @@ using WebMagazines.Data;
 namespace WebMagazines.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716082637_AddDisplayOrderToCategory")]
+    partial class AddDisplayOrderToCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,49 +47,49 @@ namespace WebMagazines.Migrations
                         new
                         {
                             Id = 1,
-                            DisplayOrder = 1,
+                            DisplayOrder = 0,
                             Name = "Adventure"
                         },
                         new
                         {
                             Id = 2,
-                            DisplayOrder = 2,
+                            DisplayOrder = 0,
                             Name = "Supersport"
                         },
                         new
                         {
                             Id = 3,
-                            DisplayOrder = 3,
+                            DisplayOrder = 0,
                             Name = "News"
                         },
                         new
                         {
                             Id = 4,
-                            DisplayOrder = 4,
+                            DisplayOrder = 0,
                             Name = "Classic"
                         },
                         new
                         {
                             Id = 5,
-                            DisplayOrder = 5,
+                            DisplayOrder = 0,
                             Name = "Off-Road"
                         },
                         new
                         {
                             Id = 6,
-                            DisplayOrder = 6,
+                            DisplayOrder = 0,
                             Name = "Customs"
                         },
                         new
                         {
                             Id = 7,
-                            DisplayOrder = 7,
+                            DisplayOrder = 0,
                             Name = "Electric"
                         },
                         new
                         {
                             Id = 8,
-                            DisplayOrder = 8,
+                            DisplayOrder = 0,
                             Name = "Commuter"
                         });
                 });
