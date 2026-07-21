@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebMagazines.DataAccess\WebMagazines.DataAccess.csproj" />
+    <ProjectReference Include="..\WebMagazines.Models\WebMagazines.Models.csproj" />
+    <ProjectReference Include="..\WebMagazines.Utility\WebMagazines.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

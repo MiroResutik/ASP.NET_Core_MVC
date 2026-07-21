@@ -1,3 +1,7 @@
 <Solution>
+  <Project Path="WebMagazines.Businness/WebMagazines.Businness.csproj" Id="b067a37e-8f05-4073-b5e5-00be4fd60a5b" />
+  <Project Path="WebMagazines.DataAccess/WebMagazines.DataAccess.csproj" Id="53328a81-e38a-4e39-9bd2-37c3931e5e08" />
+  <Project Path="WebMagazines.Models/WebMagazines.Models.csproj" Id="f3a5c1d6-b82a-4e0f-b98c-0b885fe7524c" />
+  <Project Path="WebMagazines.Utility/WebMagazines.Utility.csproj" Id="7721fcff-e456-4766-8e87-f1cdc1d39e67" />
   <Project Path="WebMagazines/WebMagazines.csproj" />
 </Solution>

@@ -8,7 +8,7 @@ using WebMagazines.Data;
 
 #nullable disable
 
-namespace WebMagazines.Migrations
+namespace WebMagazines.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260715101658_AddCategoryToDB")]

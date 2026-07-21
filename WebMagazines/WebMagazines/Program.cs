@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Businness.Services;
 using WebMagazines.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,8 @@ var test = builder.Configuration.GetConnectionString("SQLConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
+// Register the CategoryService with the dependency injection container
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

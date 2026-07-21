@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace WebMagazines.Migrations
+namespace WebMagazines.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class AddDisplayOrderToSeedData : Migration
