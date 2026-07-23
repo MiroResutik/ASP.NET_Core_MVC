@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebMagazines.Businness.Services.IServices;
-using WebMagazines.Data;
+using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 
-namespace WebMagazines.Controllers
+namespace WebMagazines.Areas.Customer.Controllers
 {
+    //[Area("Customer")]
     public class CategoryController : Controller
     {
         // Define a private readonly field for the ApplicationDbContext

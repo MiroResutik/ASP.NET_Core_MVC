@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 
-namespace WebMagazines.Controllers
+namespace WebMagazines.Areas.Customer.Controllers
 {
     public class HomeController : Controller
     {
+        //[Area("Customer")]
         public IActionResult Index()
         {
             return View();
