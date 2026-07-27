@@ -532,6 +532,181 @@ namespace WebMagazines.DataAccess.Migrations
 
                     b.Navigation("Category");
                 });
+
+            modelBuilder.Entity("WebMagazines.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ListPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Price100")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Price50")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Author = "Moto Explorer",
+                            CategoryId = 1,
+                            Description = "The ultimate guide to adventure motorcycles, covering long-distance touring, off-road riding techniques, essential gear, and unforgettable routes around the world.",
+                            ISBN = "ADV1000000001",
+                            ImageUrl = "",
+                            ListPrice = 39.990000000000002,
+                            Name = "Adventure Bike Rider",
+                            Price = 34.990000000000002,
+                            Price100 = 28.989999999999998,
+                            Price50 = 31.989999999999998
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Author = "James Rider",
+                            CategoryId = 2,
+                            Description = "Discover the world of high-performance supersport motorcycles, from track riding and cornering techniques to choosing the perfect sport bike.",
+                            ISBN = "SPR1000000002",
+                            ImageUrl = "",
+                            ListPrice = 44.990000000000002,
+                            Name = "Supersport Bike",
+                            Price = 39.990000000000002,
+                            Price100 = 33.990000000000002,
+                            Price50 = 36.990000000000002
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "Motorcycle News",
+                            CategoryId = 3,
+                            Description = "Weekly motorcycle magazine featuring the latest bike reviews, industry news, riding tips, product tests, and upcoming motorcycle events.",
+                            ISBN = "MCN1000000003",
+                            ImageUrl = "",
+                            ListPrice = 7.9900000000000002,
+                            Name = "MCN",
+                            Price = 6.9900000000000002,
+                            Price100 = 4.9900000000000002,
+                            Price50 = 5.9900000000000002
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Author = "David Cooper",
+                            CategoryId = 4,
+                            Description = "A celebration of iconic classic motorcycles, exploring their history, restoration projects, famous manufacturers, and timeless engineering.",
+                            ISBN = "CLS1000000004",
+                            ImageUrl = "",
+                            ListPrice = 34.990000000000002,
+                            Name = "Classic Bike",
+                            Price = 30.989999999999998,
+                            Price100 = 24.989999999999998,
+                            Price50 = 27.989999999999998
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Author = "Chris Walker",
+                            CategoryId = 5,
+                            Description = "Learn everything about trail riding, motocross, and enduro adventures, including bike setup, riding skills, and essential off-road equipment.",
+                            ISBN = "OFF1000000005",
+                            ImageUrl = "",
+                            ListPrice = 37.990000000000002,
+                            Name = "Off-Road Explorer",
+                            Price = 33.990000000000002,
+                            Price100 = 26.989999999999998,
+                            Price50 = 29.989999999999998
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Author = "Rick Johnson",
+                            CategoryId = 6,
+                            Description = "An inspiring look at custom motorcycle culture, featuring café racers, bobbers, choppers, custom builds, fabrication techniques, and unique designs.",
+                            ISBN = "CUS1000000006",
+                            ImageUrl = "",
+                            ListPrice = 42.990000000000002,
+                            Name = "Customs Bike",
+                            Price = 38.990000000000002,
+                            Price100 = 30.989999999999998,
+                            Price50 = 34.990000000000002
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Author = "Sarah Green",
+                            CategoryId = 7,
+                            Description = "Explore the future of motorcycling with electric motorcycles, battery technology, charging infrastructure, and the latest electric bike reviews.",
+                            ISBN = "ELE1000000007",
+                            ImageUrl = "",
+                            ListPrice = 36.990000000000002,
+                            Name = "Electric Bike",
+                            Price = 32.990000000000002,
+                            Price100 = 25.989999999999998,
+                            Price50 = 28.989999999999998
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Author = "Urban Rider",
+                            CategoryId = 8,
+                            Description = "Practical advice for everyday riders, covering fuel-efficient motorcycles, commuting tips, maintenance, riding in traffic, and essential accessories.",
+                            ISBN = "COM1000000008",
+                            ImageUrl = "",
+                            ListPrice = 29.989999999999998,
+                            Name = "Commuter Bike",
+                            Price = 25.989999999999998,
+                            Price100 = 19.989999999999998,
+                            Price50 = 22.989999999999998
+                        });
+                });
+
+            modelBuilder.Entity("WebMagazines.Models.Product", b =>
+                {
+                    b.HasOne("WebMagazines.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
 #pragma warning restore 612, 618
         }
     }
