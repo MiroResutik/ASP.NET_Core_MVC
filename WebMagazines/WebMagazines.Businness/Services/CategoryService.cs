@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WebMagazines.Businness.Services.IServices;
-using WebMagazines.Data;
+using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 
 namespace WebMagazines.Businness.Services
