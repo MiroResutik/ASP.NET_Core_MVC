@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebMagazines.Businness.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
+using WebMagazines.Utility;
 
 namespace WebMagazines.Areas.Customer.Controllers
 {
-    //[Area("Customer")]
+    
+    [Authorize(Roles = SD.RoleAdmin)] // Restrict access to users with the "Admin" role
+
     public class CategoryController : Controller
     {
         // Define a private readonly field for the ApplicationDbContext
@@ -15,6 +19,8 @@ namespace WebMagazines.Areas.Customer.Controllers
         {
             _categoryService = categoryService;
         }
+
+        [AllowAnonymous] // Allow anonymous access to the Index action
         public async Task<IActionResult> Index()
         {
             // Retrieve all categories from the database using the ApplicationDbContext

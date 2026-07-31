@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebMagazines.Businness.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 using WebMagazines.Models.ViewModels;
+using WebMagazines.Utility;
 
 namespace WebMagazines.Areas.Controllers
 {
     //[Area("Customer")]
+    // Add the Authorize attribute to restrict access to authenticated users only
+    [Authorize(Roles = SD.RoleAdmin)] // Restrict access to users with the "Admin" role
     public class ProductController : Controller
     {
         // Define a private readonly field for the ApplicationDbContext product service
@@ -24,13 +28,14 @@ namespace WebMagazines.Areas.Controllers
             _categoryService = categoryService;
             _hostEnvironment = hostEnvironment;
         }
+
+        [AllowAnonymous] // Allow anonymous access to the Index action
         public async Task<IActionResult> Index()
         {
             // Retrieve all products from the database using the ApplicationDbContext
             //var products = await _productService.GetAllProductsAsync();
             return View();
         }
-
 
         public async Task<IActionResult> Upsert(int? id)
         {
@@ -180,6 +185,7 @@ namespace WebMagazines.Areas.Controllers
 
 
         #region API CALLS
+        [AllowAnonymous] // Allow anonymous access to the Index action
 
         public async Task<IActionResult> GetAllProducts()
         {
