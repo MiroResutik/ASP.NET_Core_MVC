@@ -15,9 +15,16 @@ builder.Services.AddControllersWithViews();
 var test = builder.Configuration.GetConnectionString("SQLConnection");
 
 // Set up default connection to Server SQL
-builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(
+    //options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SQLConnection"));
+
+    options.EnableSensitiveDataLogging();
+});
 //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add Identity services to the application and configure it
