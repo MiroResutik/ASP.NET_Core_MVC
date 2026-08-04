@@ -48,6 +48,12 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 // Register the ProductService with the dependency injection container
 builder.Services.AddScoped<IProductService, ProductService>();
 
+// Register the ShoppingCartService with the dependency injection container
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+
+// Register the ApplicationUserService with the dependency injection container
+builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
+
 // Configure the application cookie settings for authentication
 // This sets the paths for login, logout, and access denied pages,
 // as well as the cookie expiration time

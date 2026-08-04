@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Views\Dashboard\" />
+    <Folder Include="Areas\Customer\Views\Cart\" />
     <Folder Include="Areas\Customer\Views\Home\" />
     <Folder Include="Areas\Identity\Controllers\" />
     <Folder Include="Views\Identity\Account\" />

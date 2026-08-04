@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Models;
 
 
 namespace WebMagazines.Areas.Customer.Controllers
@@ -8,14 +11,17 @@ namespace WebMagazines.Areas.Customer.Controllers
     //[Area("Customer")]
     public class HomeController : Controller
     {
+        // Dependency injection of the IProductService and IShoppingCartService through the constructor
         private readonly IProductService _productService;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public HomeController(IProductService productService)
+        // Constructor to inject the IProductService and IShoppingCartService dependencies
+        public HomeController(IProductService productService, IShoppingCartService shoppingCartService)
         {
             _productService = productService;
+            _shoppingCartService = shoppingCartService;
         }
 
-        
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAllProductsAsync(includeCategory: true);
@@ -23,18 +29,54 @@ namespace WebMagazines.Areas.Customer.Controllers
         }
         public async Task<IActionResult> Details(int productId)
         {
+            // Retrieve the product details from the database using the productId
             var product = await _productService.GetProductByIdAsync(productId, includeCategory: true);
             if (product == null)
             {
                 return NotFound();
             }
-            return View(product);
+
+            // Create Shopping cart object to pass to the view
+            ShoppingCart cart = new()
+            {
+                ProductId = productId,
+                Product = product,
+                Count = 1 // Default count value, this is default quantity for the product in the shopping cart
+            };
+            
+            return View(cart);
         }
 
+        [HttpPost] // Form submission for adding items to the shopping cart
+        [Authorize] // User must be logged in to add items to the shopping cart
+        public async Task<IActionResult> Details(ShoppingCart shoppingCart)
+        {
+
+            // Retrieve user Id from the claims of the logged in user 
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrEmpty(userId))
+            {
+
+                return Unauthorized(); // User is not logged in or is unauthorized, return unauthorized response
+            }
+            // populate the application user Id in the shopping cart object with the logged in user's Id
+            shoppingCart.ApplicationUserId = userId;
+
+            // Add the shopping cart item to the database using the shopping cart service
+            await _shoppingCartService.AddToCartAsync(shoppingCart);
+
+            // Redirect to the Details page of the product after adding it to the shopping cart
+            return RedirectToAction("Details", new { productId = shoppingCart.ProductId });
+        }
+
+        // Privacy page is not needed in this project
+        /*
         public IActionResult Privacy()
         {
             return View();
         }
-
+        */
     }
 }
