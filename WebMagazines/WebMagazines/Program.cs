@@ -15,9 +15,13 @@ builder.Services.AddControllersWithViews();
 var test = builder.Configuration.GetConnectionString("SQLConnection");
 
 // Set up default connection to Server SQL
-//builder.Services.AddDbContext<ApplicationDbContext>(
-    //options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(
+options => options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 
+// Set up default connection to Server SQL with sensitive data logging enabled.
+// Uncomment the following code block if you want to enable sensitive data logging for debugging purposes.
+// Be cautious when using this in production environments, as it may expose sensitive information in logs.
+/*
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(
@@ -25,6 +29,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
     options.EnableSensitiveDataLogging();
 });
+*/
+
+//// Set up Identity services with custom ApplicationUser and IdentityRole, and configure password requirements
 //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add Identity services to the application and configure it

@@ -28,6 +28,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             return View(categories);
         }
 
+        // GET: Category/Create
         public async Task<IActionResult> Create()
         {
 
@@ -36,6 +37,7 @@ namespace WebMagazines.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Create")] // Specify the action name for the POST method
+        // POST: Category/Create
         public async Task<IActionResult> CreatePOST(Category category)
         {
             if (!String.IsNullOrEmpty(category.Name) && 
@@ -55,6 +57,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
             return View(category);
         }
+        // GET: Category/Update/5
         public async Task<IActionResult> Update(int? id)
         {
             if(id== null || id == 0)
@@ -74,6 +77,7 @@ namespace WebMagazines.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Update")] // Specify the action name for the POST method
+        // POST: Category/Update/5
         public async Task<IActionResult> UpdatePOST(Category category)
         {
             if (!String.IsNullOrEmpty(category.Name) &&
@@ -93,6 +97,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
             return View(category);
         }
+        // GET: Category/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
@@ -112,6 +117,7 @@ namespace WebMagazines.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Delete")] // Specify the action name for the POST method
+        // POST: Category/Delete/5
         public async Task<IActionResult> DeletePOST(int id)
         {
             await _categoryService.DeleteCategoryAsync(id);
