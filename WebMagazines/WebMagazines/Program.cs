@@ -55,11 +55,15 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 // Register the ProductService with the dependency injection container
 builder.Services.AddScoped<IProductService, ProductService>();
 
+// Register the OrderService with the dependency injection container
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 // Register the ShoppingCartService with the dependency injection container
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 // Register the ApplicationUserService with the dependency injection container
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
+
 
 // Configure the application cookie settings for authentication
 // This sets the paths for login, logout, and access denied pages,
@@ -92,12 +96,14 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Configure the default route for the application, specifying the default controller and action
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}",
     defaults: new { areas = "Customer" })
     .WithStaticAssets();
 
+// Configure the route for areas, allowing for area-specific controllers and actions
 app.MapControllerRoute(
     name: "areas",
     pattern: "{areas:exists}/{controller=Home}/{action=Index}/{id?}")
