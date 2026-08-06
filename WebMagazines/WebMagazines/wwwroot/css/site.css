@@ -120,7 +120,7 @@
 
 /* Cart items scroll area */
 .cart-items-scroll {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 300px);
     overflow-y: auto;
 }
 
