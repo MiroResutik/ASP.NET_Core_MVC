@@ -22,11 +22,14 @@ namespace WebMagazines.Areas.Customer.Controllers
             _shoppingCartService = shoppingCartService;
         }
 
+        // Action method to display the list of products on the home page
         public async Task<IActionResult> Index()
         {
             var products = await _productService.GetAllProductsAsync(includeCategory: true);
             return View(products);
         }
+
+        // Action method to display the details of a specific product based on the productId
         public async Task<IActionResult> Details(int productId)
         {
             // Retrieve the product details from the database using the productId
@@ -47,6 +50,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             return View(cart);
         }
 
+        // Action method to handle the form submission for adding items to the shopping cart
         [HttpPost] // Form submission for adding items to the shopping cart
         [Authorize] // User must be logged in to add items to the shopping cart
         public async Task<IActionResult> Details(ShoppingCart shoppingCart)
@@ -54,6 +58,8 @@ namespace WebMagazines.Areas.Customer.Controllers
 
             // Retrieve user Id from the claims of the logged in user 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
+
+            // Check if the user is logged in and retrieve the user Id from the claims 
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if(string.IsNullOrEmpty(userId))
@@ -67,16 +73,11 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Add the shopping cart item to the database using the shopping cart service
             await _shoppingCartService.AddToCartAsync(shoppingCart);
 
+            // Set a success message in TempData to display on the next page
+            TempData["success"] = $"{shoppingCart.Count} item(s) added to your cart.";
+
             // Redirect to the Details page of the product after adding it to the shopping cart
             return RedirectToAction("Details", new { productId = shoppingCart.ProductId });
         }
-
-        // Privacy page is not needed in this project
-        /*
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-        */
     }
 }

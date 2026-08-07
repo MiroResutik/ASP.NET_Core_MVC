@@ -14,12 +14,14 @@ namespace WebMagazines.Areas.Customer.Controllers
     {
         // Define a private readonly field for the ApplicationDbContext
         private readonly ICategoryService _categoryService;
+
         // Dependency injection of the ApplicationDbContext context through the constructor
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
 
+        // Get Categories from the database and display them in the Index view
         [AllowAnonymous] // Allow anonymous access to the Index action
         public async Task<IActionResult> Index()
         {
@@ -31,21 +33,22 @@ namespace WebMagazines.Areas.Customer.Controllers
         // GET: Category/Create
         public async Task<IActionResult> Create()
         {
-
             return View();
         }
+
+        // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Create")] // Specify the action name for the POST method
-        // POST: Category/Create
         public async Task<IActionResult> CreatePOST(Category category)
         {
+            // Check if the category name is unique before adding it to the database
             if (!String.IsNullOrEmpty(category.Name) && 
                 !await _categoryService.IsCategoryNameUniqueAsync(category.Name))
             {
                 ModelState.AddModelError("", "Category name already exists!!!");
-                //return View(category);
             }
+            // Check if the model state is valid before adding the category to the database
             if (ModelState.IsValid)
             {
 
@@ -57,15 +60,19 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
             return View(category);
         }
+
         // GET: Category/Update/5
         public async Task<IActionResult> Update(int? id)
         {
+            // Check if the id parameter is null or zero, and return a NotFound result if it is
             if(id== null || id == 0)
             {
                 return NotFound();
             }
             // Retrieve the category from the database using the ApplicationDbContext
             var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+
+            // Check if the category is null, and return a NotFound result if it is
             if (category == null)
             {
                 return NotFound();
@@ -73,18 +80,17 @@ namespace WebMagazines.Areas.Customer.Controllers
             return View(category);
         }
 
-
+        // POST: Category/Update/5
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Update")] // Specify the action name for the POST method
-        // POST: Category/Update/5
         public async Task<IActionResult> UpdatePOST(Category category)
         {
+            //. Check if the category name is unique before updating it in the database
             if (!String.IsNullOrEmpty(category.Name) &&
                 !await _categoryService.IsCategoryNameUniqueAsync(category.Name, category.Id))
             {
                 ModelState.AddModelError("", "Category name already exists!!!");
-                //return View(category);
             }
             if (ModelState.IsValid)
             {
@@ -97,6 +103,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
             return View(category);
         }
+
         // GET: Category/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -113,13 +120,13 @@ namespace WebMagazines.Areas.Customer.Controllers
             return View(category);
         }
 
-
+        // POST: Category/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Delete")] // Specify the action name for the POST method
-        // POST: Category/Delete/5
         public async Task<IActionResult> DeletePOST(int id)
         {
+            // Delete the category from the database using the ApplicationDbContext
             await _categoryService.DeleteCategoryAsync(id);
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");

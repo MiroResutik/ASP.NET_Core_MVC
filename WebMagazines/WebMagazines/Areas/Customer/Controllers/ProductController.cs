@@ -16,8 +16,10 @@ namespace WebMagazines.Areas.Controllers
     {
         // Define a private readonly field for the ApplicationDbContext product service
         private readonly IProductService _productService;
+
         // Define a private readonly field for the ApplicationDbContext category service
         private readonly ICategoryService _categoryService;
+
         // Define a private readonly field for the IWebHostEnvironment
         private readonly IWebHostEnvironment _hostEnvironment;
 
@@ -29,19 +31,20 @@ namespace WebMagazines.Areas.Controllers
             _hostEnvironment = hostEnvironment;
         }
 
+        // GET method to display the Index view with a list of products
         [AllowAnonymous] // Allow anonymous access to the Index action
         public async Task<IActionResult> Index()
         {
-            // Retrieve all products from the database using the ApplicationDbContext
-            //var products = await _productService.GetAllProductsAsync();
             return View();
         }
 
+        // GET method to display the Upsert view for creating or updating a product
         public async Task<IActionResult> Upsert(int? id)
         {
             // Retrieve all categories from the database using the ApplicationDbContext
             var categories = await _categoryService.GetAllCategoriesAsync();
 
+            // Create a new instance of ProductVM and populate the CategoryList with SelectListItem objects
             ProductVM productVM = new()
             {
                 CategoryList = categories.Select(c => new SelectListItem
@@ -51,6 +54,8 @@ namespace WebMagazines.Areas.Controllers
                 }),
                 Product = new Product()
             };
+
+            // If the id is null or 0, return the view with an empty ProductVM for creating a new product
             if (id == null || id == 0)
             {
                 return View(productVM);
@@ -64,12 +69,14 @@ namespace WebMagazines.Areas.Controllers
                 
             
         }
+
+        // POST method to handle the form submission for creating or updating a product
         [HttpPost]
         [ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
         [ActionName("Upsert")] // Specify the action name for the POST method
         public async Task<IActionResult> UpsertPOST(ProductVM productVM, IFormFile? file)
         {
-
+            // Check if the model state is valid before proceeding with the operation
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -94,6 +101,7 @@ namespace WebMagazines.Areas.Controllers
                     productVM.Product.ImageUrl = @"\images\products\" + fileName + extension;
                 }
 
+                // Check if the product ID is null or 0 to determine whether to create a new product or update an existing one
                 if (productVM.Product.Id == null || productVM.Product.Id == 0)
                 {
                     //create
@@ -104,6 +112,7 @@ namespace WebMagazines.Areas.Controllers
                     await _productService.UpdateProductAsync(productVM.Product);
 
                 }
+
                 TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index");
 
@@ -183,23 +192,20 @@ namespace WebMagazines.Areas.Controllers
         }
         */
 
+        // POST method to handle the form submission for deleting a product
+        #region API CALLS 
 
-        #region API CALLS
+        // GET method to retrieve all products from the database and return them as JSON data
         [AllowAnonymous] // Allow anonymous access to the Index action
-
         public async Task<IActionResult> GetAllProducts()
         {
             // Retrieve all products from the database using the ApplicationDbContext
             var products = await _productService.GetAllProductsAsync(true);
             return Json(new { data = products });
         }
-
-        //[HttpPost] // Use the HttpPost attribute to indicate that this action handles POST requests
-        //[ValidateAntiForgeryToken] // Add this attribute to protect against Cross-Site Request Forgery (CSRF) attacks
-        //[ActionName("Delete")] // Specify the action name for the POST method
+        
+        // POST method to handle the form submission for deleting a product
         [HttpDelete] // Use the HttpDelete attribute to indicate that this action handles DELETE requests
-
-        //public async Task<IActionResult> DeletePOST(int id)
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
@@ -224,9 +230,7 @@ namespace WebMagazines.Areas.Controllers
             }
             await _productService.DeleteProductAsync(id.Value);
             return Json(new { success = true, message = "Product deleted successfully" });
-            //await _productService.DeleteProductAsync(id);
-            //TempData["success"] = "Product deleted successfully";
-            //return RedirectToAction("Index");
+
         }
         #endregion
     }
