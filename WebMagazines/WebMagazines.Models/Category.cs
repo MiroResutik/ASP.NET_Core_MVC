@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebMagazines.Models
 {
+    // Represents a category in the application
     public class Category
     {
         //[Key]

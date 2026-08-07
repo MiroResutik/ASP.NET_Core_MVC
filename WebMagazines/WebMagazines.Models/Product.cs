@@ -7,6 +7,7 @@ using System.Text;
 
 namespace WebMagazines.Models
 {
+    // Product class represents a product in the system
     public class Product
     {
         [Key]
