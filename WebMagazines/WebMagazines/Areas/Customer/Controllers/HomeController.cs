@@ -73,11 +73,16 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Add the shopping cart item to the database using the shopping cart service
             await _shoppingCartService.AddToCartAsync(shoppingCart);
 
+            // Pause execution for 0.5 seconds on the server
+            //await Task.Delay(500);
+
             // Set a success message in TempData to display on the next page
             TempData["success"] = $"{shoppingCart.Count} item(s) added to your cart.";
 
+            
+
             // Redirect to the Details page of the product after adding it to the shopping cart
-            return RedirectToAction("Details", new { productId = shoppingCart.ProductId });
+            return RedirectToAction("Index");
         }
     }
 }
