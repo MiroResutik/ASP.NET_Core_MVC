@@ -12,11 +12,14 @@ namespace WebMagazines.Businness.Services
     {
         // Define a private readonly field for the ApplicationDbContext
         private readonly ApplicationDbContext _context;
+
         // Dependency injection of the ApplicationDbContext context through the constructor
         public ApplicationUserService(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        // Method to get a user by their ID asynchronously from the database
         public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
         {
             // Use the _context to query the Users DbSet and find the user by their Id
