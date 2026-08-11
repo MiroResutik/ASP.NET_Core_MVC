@@ -17,9 +17,23 @@ namespace WebMagazines.DataAccess.Data
 
         // Define a DbSet for the Category entity
         public DbSet<Category> Categories { get; set; }
+
+        // Define a DbSet for the Products entity
         public DbSet<Product> Products { get; set; }
 
+        // Define a DbSet for the Application Users entity
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+        // Define a DbSet for the Shopping Cart entity
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+
+        // Define a DbSet for the Order Header entity
+        public DbSet<OrderHeader> OrderHeaders { get; set; }
+
+        // Define a DbSet for the Order Details entity
+        public DbSet<OrderDetails> OrderDetails { get; set; }
+
+        // Override the OnModelCreating method to configure the model and seed data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Call the base method to ensure IdentityDbContext configurations are applied
@@ -36,6 +50,7 @@ namespace WebMagazines.DataAccess.Data
                 new Category { Id = 8, Name = "Commuter", DisplayOrder=8 }
 
                 );
+            // Configure the Product entity with seed data
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
