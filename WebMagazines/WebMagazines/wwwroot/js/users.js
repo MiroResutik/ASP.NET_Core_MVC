@@ -1,18 +1,27 @@
-﻿var productDataTable;
+﻿var userDataTable;
 
 $(document).ready(function () {
     loadDataTable();
-})
+});
 function loadDataTable() {
-    productDataTable = $('#tblData').DataTable({
-        ajax: '/product/getallproducts',
+    userDataTable = $('#tblData').DataTable({
+        ajax: '/user/getall',
         columns: [
-            { data: 'name', "width": "20%" },
-            { data: 'isbn', "width": "15%" },
-            { data: 'price', "width": "10%", "render": function (data) { return '£' + data.toFixed(2); } },
-            { data: 'author', "width": "15%" },
             {
-                data: 'category.name', "width": "15%", "render": function (data) { return '<span class="badge bg-secondary">' + data + '</span>'; }
+                data: 'name',
+                "width": "15%",
+                "render": function (data) {
+                    return `
+            <i class="bi bi-person me-2"></i>
+            ${data}
+        `;
+                }
+            },
+            { data: 'email', "width": "20%" },
+            { data: 'phoneNumber', "width": "15%" },
+            { data: 'state', "width": "15%" },
+            {
+                data: 'role', "width": "15%", "render": function (data) { return '<span class="badge bg-secondary">' + data + '</span>'; }
             },
             {
                 data: 'id', "width": "25%", "render": function (data) {
