@@ -118,9 +118,11 @@ namespace WebMagazines.Areas.Controllers
                     if (string.IsNullOrEmpty(OrderHeader.Carrier) || string.IsNullOrEmpty(OrderHeader.TrackingNumber))
                     {
                         TempData["Error"] = "Please provide both carrier and tracking number.";
-                        return RedirectToAction(nameof(Details), new {orderId = OrderHeader.Id});
+                        return RedirectToAction(nameof(Details), new { orderId = OrderHeader.Id });
                     }
-                    await _orderService.UpdateOrderStatusAsync(OrderHeader.Id, SD.StatusShipped,OrderHeader.Carrier,OrderHeader.TrackingNumber);
+
+                    await _orderService.UpdateOrderStatusAsync(
+                        OrderHeader.Id, SD.StatusShipped, OrderHeader.Carrier, OrderHeader.TrackingNumber);
                     successMessage = "Order shipped successfully.";
                     break;
                 default:
