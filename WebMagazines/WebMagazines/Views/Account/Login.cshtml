@@ -1,0 +1,130 @@
+﻿@model LoginVM
+
+<div class="container py-4 py-lg-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-sm-11 col-md-8 col-lg-6 col-xl-5">
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="card-header text-white text-center py-4"
+                     style="background:linear-gradient(135deg,#0f172a,#1e40af,#3b82f6);">
+
+                    <i class="bi bi-box-arrow-in-right display-4"></i>
+
+                    <h2 class="fw-bold mt-3 mb-1">
+                        Welcome Back
+                    </h2>
+
+                    <p class="mb-0 text-info">
+                        Sign in to continue shopping
+                    </p>
+
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-3 p-md-4 p-lg-5">
+
+                    <form asp-route-returnUrl="@ViewData["ReturnUrl"]"
+                          asp-action="Login"
+                          asp-controller="Account"
+                          method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="Email" class="form-label"></label>
+
+                            <input asp-for="Email"
+                                   class="form-control"
+                                   placeholder="name@example.com" />
+
+                            <span asp-validation-for="Email"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="Password" class="form-label"></label>
+
+                            <input asp-for="Password"
+                                   class="form-control"
+                                   placeholder="Enter your password" />
+
+                            <span asp-validation-for="Password"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+
+                            <div class="form-check">
+
+                                <input asp-for="RememberMe"
+                                       class="form-check-input" />
+
+                                <label asp-for="RememberMe"
+                                       class="form-check-label">
+                                    Remember me
+                                </label>
+
+                            </div>
+
+                            <a href="#"
+                               class="text-decoration-none small fw-semibold">
+                                Forgot your password?
+                            </a>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary btn-lg w-100">
+
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+
+                            Log In
+
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <div class="text-center">
+
+                        <p class="mb-0">
+
+                            Don't have an account?
+
+                            <a asp-action="Register"
+                               asp-controller="Account"
+                               asp-route-returnUrl="@ViewData["ReturnUrl"]"
+                               class="fw-bold text-decoration-none">
+
+                                Register now
+
+                            </a>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
