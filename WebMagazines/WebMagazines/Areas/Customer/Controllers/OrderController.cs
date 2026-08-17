@@ -75,7 +75,7 @@ namespace WebMagazines.Areas.Controllers
             // 
             await _orderService.UpdateOrderAsync(orderHeaderFromDb);
 
-            // TODO:Success toast is not working currently
+            // TODO:Success toast is not working currently - FIXED
             TempData["Success"] = "Order Details Updated Successfully.";
 
             return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
