@@ -1,0 +1,109 @@
+﻿@model int
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6 col-xl-5">
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="card-header text-white text-center py-4"
+                     style="background: linear-gradient(135deg,#1e3a8a,#2563eb,#3b82f6);">
+
+                    <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center shadow"
+                         style="width:85px;height:85px;background:rgba(255,255,255,.15);">
+
+                        <i class="bi bi-check-circle-fill text-white display-5"></i>
+
+                    </div>
+
+                    <h3 class="fw-bold mb-2">
+                        Order Confirmed!
+                    </h3>
+
+                    <p class="mb-0 text-white-50">
+                        Thank you for your purchase. Your order has been successfully placed.
+                    </p>
+
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-5 text-center">
+
+                    <p class="text-muted mb-2">
+                        Your Order Number
+                    </p>
+
+                    <h1 class="display-5 fw-bold text-primary mb-4">
+                        #@Model
+                    </h1>
+
+                    <div class="row g-3 mb-4">
+
+                        <div class="col-6">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+
+                                <i class="bi bi-envelope-check fs-3 text-primary"></i>
+
+                                <p class="small text-muted mt-2 mb-0">
+                                    Confirmation email sent
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="border rounded-3 p-3 h-100 bg-light">
+
+                                <i class="bi bi-truck fs-3 text-primary"></i>
+
+                                <p class="small text-muted mt-2 mb-0">
+                                    Tracking available soon
+                                </p>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="alert alert-primary border-0 rounded-3 mb-4">
+
+                        <i class="bi bi-info-circle me-2"></i>
+
+                        You will receive another email once your order has been dispatched.
+
+                    </div>
+
+                    <div class="d-grid gap-3">
+
+                        <a asp-area="Customer"
+                           asp-controller="Order"
+                           asp-action="Index"
+                           class="btn btn-accent btn-lg">
+
+                            <i class="bi bi-box-seam me-2"></i>
+                            View My Orders
+
+                        </a>
+
+                        <a asp-area="Customer"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-outline-primary btn-lg">
+
+                            <i class="bi bi-house-door me-2"></i>
+                            Continue Shopping
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
