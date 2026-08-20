@@ -5,10 +5,12 @@ using WebMagazines.Businness.Services;
 using WebMagazines.Businness.Services.IServices;
 using WebMagazines.Models;
 using WebMagazines.Models.ViewModels;
+using WebMagazines.Utility;
 
 namespace WebMagazines.Areas.Admin.Controllers
 {
     //[Area("Admin")] 
+    [Authorize(Roles = SD.RoleAdmin+","+SD.RoleEmployee)]
     public class UserController : Controller
     {
         
@@ -85,6 +87,62 @@ namespace WebMagazines.Areas.Admin.Controllers
 
             TempData["Success"] = "Role has been updated";
             return RedirectToAction(nameof(Index));
+        }
+        // Endpoint method for password change management
+        public async Task<IActionResult> ChangePassword(string userId)
+        {
+            // Retrieve user
+            var user = await _userService.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found" });
+            }
+
+            AdminChangePasswordVM adminChangePasswordVM = new()
+            {
+                UserEmail = user.Email,
+                UserId = user.Id
+            };
+
+            return View(adminChangePasswordVM);
+        }
+        [HttpPost]
+        // Endpoint post method for password change management
+        public async Task<IActionResult> ChangePassword(AdminChangePasswordVM adminChangePasswordVM)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(adminChangePasswordVM);
+            }
+            // Retrieve user - add userId to hidden property in the view
+            var user = await _userService.GetUserByIdAsync(adminChangePasswordVM.UserId);
+
+            if (user == null)
+            {
+                return NotFound(); // This can be change to redirect to different view
+            }
+
+            // Change password
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user); // generates password token
+            // Use helper function in user manager using token. It take 3 parameters
+            var result = await _userManager.ResetPasswordAsync(user, token,adminChangePasswordVM.NewPassword);
+
+            // 
+            if (result.Succeeded)
+            {
+                TempData["Success"] = $"Password for {user.Email} has been changed successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            adminChangePasswordVM.UserEmail = user.Email;
+            return View(adminChangePasswordVM);
+            
         }
         #region API CALLS 
 
