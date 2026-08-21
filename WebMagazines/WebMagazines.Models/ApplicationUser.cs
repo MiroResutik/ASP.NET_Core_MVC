@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace WebMagazines.Models
@@ -14,6 +15,8 @@ namespace WebMagazines.Models
         public string? City { get; set; }
         public string? State { get; set; }
         public string? PostalCode { get; set; }
-       
+
+        [NotMapped] // Do not want to create in database
+        public string? Role { get; set; }
     }
 }
