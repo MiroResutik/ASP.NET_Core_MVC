@@ -157,8 +157,11 @@ namespace WebMagazines.Areas.Customer.Controllers
                 {
                     // Increase the count of the cart item and save the changes
                     cart.Count++;
+
                     
                     await _shoppingCartService.UpdateCartAsync(cart); // Update the cart item in the database
+                    await UpdateCartSessionAsync();
+
                 }
             }
 
@@ -176,7 +179,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             {
                 cart.Count--;
                 await _shoppingCartService.UpdateCartAsync(cart);
-                //await UpdateCartSessionAsync();
+                await UpdateCartSessionAsync();
             }
             return RedirectToAction(nameof(Index));
         }
@@ -193,6 +196,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             {
                 cart.Count = 0;
                 await _shoppingCartService.UpdateCartAsync(cart);
+                await UpdateCartSessionAsync();
             }
 
             return RedirectToAction(nameof(Index));
@@ -227,8 +231,28 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
 
             await _shoppingCartService.UpdateCartAsync(cart); // Update the cart item in the database
-            //await UpdateCartSessionAsync();
+            await UpdateCartSessionAsync();
             return Ok(new { success = true }); // Return a JSON response indicating success
+        }
+
+        private async Task UpdateCartSessionAsync()
+        {
+            // Retrieve user Id from the claims of the logged in user 
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+
+            // Check if the user is logged in and retrieve the user Id from the claims 
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+
+                var count = await _shoppingCartService.GetCartCountAsync(userId);
+
+                // Add value to cart session
+                HttpContext.Session.SetInt32(SD.SessionCart, count);
+            }
+
+
         }
     }
 }
