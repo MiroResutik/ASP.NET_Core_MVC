@@ -1,0 +1,93 @@
+﻿@using WebMagazines.Utility
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string Active(string controller, string? action = null)
+    {
+        if (currentController == controller &&
+            (action == null || currentAction == action))
+        {
+            return "active";
+        }
+
+        return "";
+    }
+}
+
+<div class="admin-sidebar-nav">
+
+    <!-- Overview -->
+    <p class="nav-section mb-2">
+        Overview
+    </p>
+
+    <a asp-area="Admin"
+       asp-controller="Dashboard"
+       asp-action="Index"
+       class="nav-link d-flex align-items-center gap-2 @Active("Dashboard")">
+
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+
+    </a>
+
+
+    <!-- Commerce -->
+    <p class="nav-section mb-2">
+        Commerce
+    </p>
+
+    <a asp-area="Admin"
+       asp-controller="Order"
+       asp-action="Index"
+       asp-route-status="all"
+       class="nav-link d-flex align-items-center gap-2 @Active("Order")">
+
+        <i class="bi bi-receipt"></i>
+        <span>Orders</span>
+
+    </a>
+
+
+    <a asp-area="Admin"
+       asp-controller="Product"
+       asp-action="Index"
+       class="nav-link d-flex align-items-center gap-2 @Active("Product")">
+
+        <i class="bi bi-grid-3x3-gap"></i>
+        <span>Products</span>
+
+    </a>
+
+
+    <a asp-area="Admin"
+       asp-controller="Category"
+       asp-action="Index"
+       class="nav-link d-flex align-items-center gap-2 @Active("Category")">
+
+        <i class="bi bi-tags"></i>
+        <span>Categories</span>
+
+    </a>
+
+
+    <!-- Management -->
+    @if (User.IsInRole(SD.RoleAdmin))
+    {
+        <p class="nav-section mb-2">
+            Management
+        </p>
+
+        <a asp-area="Admin"
+           asp-controller="User"
+           asp-action="Index"
+           class="nav-link d-flex align-items-center gap-2 @Active("User")">
+
+            <i class="bi bi-people"></i>
+            <span>Users</span>
+
+        </a>
+    }
+
+</div>
