@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using WebMagazines.Businness.Services.IServices;
 using WebMagazines.Models;
 using WebMagazines.Models.ViewModels;
 using WebMagazines.Utility;
@@ -9,20 +10,23 @@ namespace WebMagazines.Views.Identity.Controllers
 {
     public class AccountController : Controller
     {
-        // Define private readonly fields for UserManager, SignInManager, and RoleManager
+        // Define private readonly fields 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IShoppingCartService _shoppingCartService;
 
         // Constructor to initialize UserManager, SignInManager, and RoleManager using dependency injection
         public AccountController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IShoppingCartService shoppingCartService)
         {
             // Initialize the private fields with the injected dependencies
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _shoppingCartService = shoppingCartService;
         }
 
         // GET: /Account/Login
@@ -38,7 +42,7 @@ namespace WebMagazines.Views.Identity.Controllers
         // This action handles the login of a user
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginVM loginVM, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginVM loginVM, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -49,6 +53,19 @@ namespace WebMagazines.Views.Identity.Controllers
                 // If the login is successful, redirect to the return URL or the home page
                 if (result.Succeeded)
                 {
+                    // Setting a session when log in
+                    // This is not needed anymore as a session, this is now handled by CartCountViewComponent
+                    /*
+                    // Retrieve User 
+                    var user = await _userManager.FindByEmailAsync(loginVM.Email);
+
+                    // Retrieve existing Shopping cart 
+                    if(user!=null)
+                    {
+                        var count = await _shoppingCartService.GetCartCountAsync(user.Id);
+                        HttpContext.Session.SetInt32(SD.SessionCart, count);
+                    }
+                    */
                     // If a return URL is provided and it's a local URL, redirect to that URL
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
@@ -132,8 +149,11 @@ namespace WebMagazines.Views.Identity.Controllers
                         // If no role is selected, assign the default role (Customer)
                         await _userManager.AddToRoleAsync(user, SD.RoleCustomer);
                     }
-                    // Sign in the user
+                    // User has been created - Sign in the user
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    // Set the Cart session with value of 0 - as the user just created the account
+                    //HttpContext.Session.SetInt32(SD.SessionCart, 0);
 
                     // If a return URL is provided and it's a local URL, redirect to that URL
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -163,6 +183,8 @@ namespace WebMagazines.Views.Identity.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            // Set the Cart to 0 on logout
+            HttpContext.Session.SetInt32(SD.SessionCart, 0);
             return RedirectToAction("Index", "Home");
         }
     }
