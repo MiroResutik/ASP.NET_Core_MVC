@@ -22,5 +22,7 @@ namespace WebMagazines.Utility
         public const string StatusRefunded = "Refunded";
         public const string StatusCompleted = "Completed";
 
+        public const string SessionCart = "SessionShoppingCartWebMagazines";
+
     }
 }
