@@ -61,9 +61,19 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 // Register the ShoppingCartService with the dependency injection container
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
+// Register the EmailService with the dependency injection container
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 // Register the ApplicationUserService with the dependency injection container
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(30); // Timeout session
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Configure the application cookie settings for authentication
 // This sets the paths for login, logout, and access denied pages,
@@ -73,7 +83,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = $"/Account/Login"; // Set the login path for unauthenticated users
     options.LogoutPath = $"/Account/Logout"; // Set the logout path for authenticated users
     options.AccessDeniedPath = $"/Account/AccessDenied"; // Set the access denied path for unauthorized users
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Set the cookie expiration time to 30 minutes
+    options.ExpireTimeSpan = TimeSpan.FromDays(30); // Set the cookie expiration time to 30 minutes
 });
 
 var app = builder.Build();
@@ -88,6 +98,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseSession();
 
 // Enable authentication and authorization middleware. Authentication must be called
 // before authorization to ensure that the user is authenticated before checking their permissions.
