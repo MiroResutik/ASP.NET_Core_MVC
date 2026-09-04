@@ -12,7 +12,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <div class="rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #dbeafe;">
-                        <i class="bi bi-currency-dollar" style="color: #3b82f6;"></i>
+                        <i class="bi bi-currency-pound" style="color: #3b82f6;"></i>
                     </div>
                     <span class="text-uppercase fw-semibold text-secondary" style="font-size: 0.6rem; letter-spacing: 0.05em;">Revenue</span>
                 </div>
@@ -79,7 +79,7 @@
             <div class="card-body">
                 <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up me-1" style="color: #3b82f6;"></i> Revenue Trend</h6>
                 <div style="height: 250px;">
-                        <canvas id="myChart"></canvas>
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
         </div>
@@ -88,7 +88,9 @@
         <div class="card border shadow-sm">
             <div class="card-body">
                 <h6 class="fw-semibold mb-3"><i class="bi bi-bar-chart me-1" style="color: #10b981;"></i> Orders Per Month</h6>
-                <div style="height: 250px;">CHART 2</div>
+                <div style="height: 250px;">
+                    <canvas id="ordersChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -100,7 +102,9 @@
         <div class="card border shadow-sm">
             <div class="card-body">
                 <h6 class="fw-semibold mb-3"><i class="bi bi-circle-half me-1" style="color: #f59e0b;"></i> Order Status</h6>
-                <div style="height: 200px;" class="d-flex align-items-center justify-content-center">CHART 3</div>
+                <div style="height: 300px;" class="d-flex align-items-center justify-content-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -108,10 +112,40 @@
         <div class="card border shadow-sm">
             <div class="card-body">
                 <h6 class="fw-semibold mb-3"><i class="bi bi-tags me-1" style="color: #8b5cf6;"></i> Products by Category</h6>
-                <div style="height: 200px;" class="d-flex align-items-center justify-content-center">CHART 4</div>
+                <div style="height: 300px;" class="d-flex align-items-center justify-content-center">
+                    <canvas id="categoryChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 
+@section Scripts {
+
+    <script>
+        const ctx = document.getElementById('myChart');
+        $.getJSON('/Dashboard/GetChartData', function(data) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.monthlyRevenue.map(r => r.label),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: data.monthlyRevenue.map(r => r.revenue),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        })
+
+        
+    </script>
+}
