@@ -37,7 +37,7 @@ namespace WebMagazines.Areas.Admin.Controllers
             return View(dashboardVM);
         }
 
-        // Endpoint to get the total revenue for last 30 days
+        // Endpoint for all dashboard chart data - entity framework
         [HttpGet]
         public async Task<IActionResult> GetChartData()
         {
@@ -45,12 +45,14 @@ namespace WebMagazines.Areas.Admin.Controllers
             var orders = await _db.OrderHeaders.ToListAsync();
             var productCount = await _db.Products.Include(p => p.Category).ToListAsync();
             var categories = await _db.Categories.ToListAsync();
+            var products = await _db.Products.Include(u => u.Category).ToListAsync();
 
             // Revenue by month - last 6 months
             var now = DateTime.UtcNow;
             var sixMonthsAgo = now.AddMonths(-5);
             var monthlyRevenue = Enumerable.Range(0, 6).Select(i =>
             {
+                // Calculate the month for the current iteration
                 var month = sixMonthsAgo.AddMonths(i);
                 var revenue = orders
                 .Where(o => o.OrderDate.Year == month.Year && o.OrderDate.Month == month.Month
@@ -60,10 +62,33 @@ namespace WebMagazines.Areas.Admin.Controllers
                 return new { Label = month.ToString("MMM yyyy"), Revenue = revenue };
             }).ToList();
 
+            // Orders by month (last 6 months)
+            var monthlyOrders = Enumerable.Range(0, 6).Select(i =>
+            {
+                var month = sixMonthsAgo.AddMonths(i);
+                var count = orders.Count(o => o.OrderDate.Year == month.Year && o.OrderDate.Month == month.Month);
+                return new { Label = month.ToString("MMM yyyy"), Count = count };
+            }).ToList();
+
+            // Order status breakdown
+            var statusBreakdown = orders
+                .GroupBy(o => o.OrderStatus ?? "Unknown")
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToList();
+
+            // Products per category
+            var productsPerCategory = categories.Select(c => new
+            {
+                Category = c.Name,
+                Count = products.Count(p => p.CategoryId == c.Id) // Count products in specific chosen category
+            }).ToList();
 
             return Json(new
             {
                 monthlyRevenue,
+                monthlyOrders,
+                statusBreakdown,
+                productsPerCategory
 
             });
         }
