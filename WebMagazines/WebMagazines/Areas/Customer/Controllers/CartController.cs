@@ -14,18 +14,25 @@ namespace WebMagazines.Areas.Customer.Controllers
     [Authorize] // Ensure that only authenticated users can access the CartController]
     public class CartController : Controller
     {
-        // Dependency injection of the IProductService,IShoppingCartService
+        // Dependency injection of the IProductService,IShoppingCartService, IEmailService
         // IApplicationUserService, and IOrderService through the constructor 
         private readonly IProductService _productService;
+        private readonly IEmailService _emailService;
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IApplicationUserService _applicationUserService;
         private readonly IOrderService _orderService;
 
         // Cart Constructor to inject the IProductService,IShoppingCartService,
         // IApplicationUserService, and IOrderService dependencies
-        public CartController(IProductService productService, IShoppingCartService shoppingCartService, IApplicationUserService applicationUserService, IOrderService orderService)
+        public CartController(
+            IProductService productService, 
+            IShoppingCartService shoppingCartService, 
+            IApplicationUserService applicationUserService, 
+            IOrderService orderService, 
+            IEmailService emailService)
         {
             _productService = productService;
+            _emailService = emailService;
             _shoppingCartService = shoppingCartService;
             _applicationUserService = applicationUserService;
             _orderService = orderService;
@@ -122,9 +129,14 @@ namespace WebMagazines.Areas.Customer.Controllers
             }).ToList();
 
             // Create Order
+
             // Call the CreateOrderAsync method of the IOrderService to create a new order based on the ShoppingCartVM
             await _orderService.CreateOrderAsync(shoppingCartVM.OrderHeader);
 
+            // Email service 
+            var user = await _applicationUserService.GetUserByIdAsync(userId);
+
+            await _emailService.SendOrderConfirmationEmailAsync(toEmail: user.Email, shoppingCartVM.OrderHeader.Id,(decimal)shoppingCartVM.OrderHeader.OrderTotal);
             // Clear the shopping cart for the user after creating the order
             // await _shoppingCartService.ClearUserCartAsync(userId);
 
