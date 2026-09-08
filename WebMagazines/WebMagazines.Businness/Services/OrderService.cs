@@ -31,7 +31,7 @@ namespace WebMagazines.Businness.Services
 
         // Implement the GetAllOrderAsync method to retrieve
         // all orders with optional filters and inclusion of related entities
-        public async Task<IEnumerable<OrderHeader>> GetAllOrderAsync(string? userId = null, string? status = null, bool includeUser = false, bool includeDetails = false)
+        public async Task<IEnumerable<OrderHeader>> GetAllOrderAsync(string? userId = null, string? status = null, bool includeUser = true, bool includeDetails = false)
         {
             // Start with the base query for OrderHeaders
             var query = _db.OrderHeaders.AsQueryable();

@@ -71,6 +71,12 @@ namespace WebMagazines.Views.Identity.Controllers
                     {
                         return Redirect(returnUrl);
                     }
+
+                    // Check the role of the user and redirect to admin Dashboard if the user is an Admin or Employee, otherwise redirect to the home page
+                    if(User.IsInRole(SD.RoleAdmin) || User.IsInRole(SD.RoleEmployee))
+                    {
+                        return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                    }
                     return RedirectToAction("Index", "Home", new { area = "Customer" });
 
                 }
