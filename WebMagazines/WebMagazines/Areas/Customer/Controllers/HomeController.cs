@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using WebMagazines.Businness.Services.IServices;
 using WebMagazines.Models;
+using WebMagazines.Utility;
 
 
 namespace WebMagazines.Areas.Customer.Controllers
@@ -73,8 +74,10 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Add the shopping cart item to the database using the shopping cart service
             await _shoppingCartService.AddToCartAsync(shoppingCart);
 
-            // Pause execution for 0.5 seconds on the server
-            //await Task.Delay(500);
+            var count = await _shoppingCartService.GetCartCountAsync(userId);
+
+            // Add value to cart session
+            HttpContext.Session.SetInt32(SD.SessionCart, count);
 
             // Set a success message in TempData to display on the next page
             TempData["success"] = $"{shoppingCart.Count} item(s) added to your cart.";
@@ -83,6 +86,10 @@ namespace WebMagazines.Areas.Customer.Controllers
 
             // Redirect to the Details page of the product after adding it to the shopping cart
             return RedirectToAction("Index");
+        }
+        public IActionResult Privacy()
+        {
+            return View();
         }
     }
 }
