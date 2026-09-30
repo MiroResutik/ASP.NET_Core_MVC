@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mailjet.Api" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebMagazines.DataAccess\WebMagazines.DataAccess.csproj" />
     <ProjectReference Include="..\WebMagazines.Models\WebMagazines.Models.csproj" />
     <ProjectReference Include="..\WebMagazines.Utility\WebMagazines.Utility.csproj" />
