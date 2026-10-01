@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 using WebMagazines.Utility;

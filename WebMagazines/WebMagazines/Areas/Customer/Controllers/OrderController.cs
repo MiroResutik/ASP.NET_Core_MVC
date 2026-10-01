@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 using WebMagazines.Models.ViewModels;
