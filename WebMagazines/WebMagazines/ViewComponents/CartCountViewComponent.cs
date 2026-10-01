@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.Utility;
 
 namespace WebMagazines.ViewComponents
