@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using WebMagazines.Businness.Services.IServices;
-using WebMagazines.Businness.Services;
+using WebMagazines.Business.Services.IServices;
+using WebMagazines.Business.Services;
 using WebMagazines.DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
 using WebMagazines.Models;
+using Stripe;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,7 +54,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Register the ProductService with the dependency injection container
-builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductService, WebMagazines.Business.Services.ProductService>();
 
 // Register the OrderService with the dependency injection container
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -95,6 +96,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Get the Stripe Api Key
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.UseHttpsRedirection();
 app.UseRouting();
