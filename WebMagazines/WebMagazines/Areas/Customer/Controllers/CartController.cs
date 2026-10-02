@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using Stripe.Checkout;
 using System.Diagnostics;
 using System.Security.Claims;
 using WebMagazines.Business.Services.IServices;
@@ -117,7 +119,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             }
 
             // Set the order status to "Approved" for the new order
-            shoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+            shoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
 
             // Create a list of OrderDetails based on the shopping cart items using projection with LINQ
             shoppingCartVM.OrderHeader.OrderDetails = shoppingCartVM.ShoppingCartList
@@ -133,6 +135,57 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Call the CreateOrderAsync method of the IOrderService to create a new order based on the ShoppingCartVM
             await _orderService.CreateOrderAsync(shoppingCartVM.OrderHeader);
 
+            // Stripe session object - Gather the payment before Email service
+            
+            try
+            {
+                var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+
+                var options = new Stripe.Checkout.SessionCreateOptions
+                {
+                    // Stripe will redirect if payment is successful
+                    SuccessUrl = domain+ $"Cart/OrderConfirmation?id={shoppingCartVM.OrderHeader.Id}",
+                    CancelUrl =domain+ "cart/index", // Redirect if user cancels the payment
+                    LineItems = new List<SessionLineItemOptions>(),
+
+                    Mode = "payment",
+                    // Metadata links the stripe session back to internal orderId - essential for debugging
+                    Metadata = new Dictionary<string, string>
+                    {
+                        {"OrderId", shoppingCartVM.OrderHeader.Id.ToString() }
+                    }
+                };
+
+                foreach (var item in shoppingCartVM.ShoppingCartList)
+                {
+
+                    var sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(item.Price * 100),
+                            Currency = "gbp",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = item.Product.Name
+                            }
+                        },
+
+
+                        Quantity = item.Count,
+
+                    };
+                    options.LineItems.Add(sessionLineItem);
+                }
+                var service = new SessionService();
+                Session session = service.Create(options);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
             // Email service 
             var user = await _applicationUserService.GetUserByIdAsync(userId);
 
