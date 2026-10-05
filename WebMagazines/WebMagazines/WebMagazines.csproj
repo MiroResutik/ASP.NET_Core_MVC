@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
     <PackageReference Include="NuGet.Packaging" Version="7.6.0" />
     <PackageReference Include="NuGet.Protocol" Version="7.6.0" />
+    <PackageReference Include="Stripe.net" Version="52.4.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebMagazines.Businness\WebMagazines.Businness.csproj" />
+    <ProjectReference Include="..\WebMagazines.Businness\WebMagazines.Business.csproj" />
     <ProjectReference Include="..\WebMagazines.DataAccess\WebMagazines.DataAccess.csproj" />
   </ItemGroup>
 

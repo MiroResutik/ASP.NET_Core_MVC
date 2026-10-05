@@ -4,7 +4,7 @@ using WebMagazines.Business.Services;
 using WebMagazines.DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
 using WebMagazines.Models;
-using Stripe;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,7 +54,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Register the ProductService with the dependency injection container
-builder.Services.AddScoped<IProductService, WebMagazines.Business.Services.ProductService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Register the OrderService with the dependency injection container
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -98,7 +98,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Get the Stripe Api Key
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.UseHttpsRedirection();
 app.UseRouting();
