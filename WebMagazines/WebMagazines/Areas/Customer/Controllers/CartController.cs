@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mailjet.Client.Resources;
 using Stripe;
 using Stripe.Checkout;
 using System.Diagnostics;
@@ -100,7 +101,6 @@ namespace WebMagazines.Areas.Customer.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
-                //return RedirectToAction("Login", "Account", new { area = "Identity" });
             }
 
             // Retrieve the shopping cart items for the authenticated user using the userId
@@ -144,7 +144,7 @@ namespace WebMagazines.Areas.Customer.Controllers
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
                     // Stripe will redirect if payment is successful
-                    SuccessUrl = domain+ $"Cart/OrderConfirmation?id={shoppingCartVM.OrderHeader.Id}",
+                    SuccessUrl = domain+ $"cart/OrderConfirmation?id={shoppingCartVM.OrderHeader.Id}",
                     CancelUrl =domain+ "cart/index", // Redirect if user cancels the payment
                     LineItems = new List<SessionLineItemOptions>(),
 
@@ -177,29 +177,92 @@ namespace WebMagazines.Areas.Customer.Controllers
                     };
                     options.LineItems.Add(sessionLineItem);
                 }
+                // Creating object of a session service that handles the checkout session on the stripe server
                 var service = new SessionService();
+                // Sending payment info to Stripe API by creating a checkout session which returns
+                // object with payment ID and URL 
                 Session session = service.Create(options);
+
+                await _orderService.UpdateStripePaymentAsync(shoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+                // Redirect to Stripe to collect the payment
+                Response.Headers.Append("Location", session.Url);
+                return new StatusCodeResult(303);
+
+
             }
             catch (Exception ex)
             {
 
-                throw;
+                TempData["Error"] = "Payment processing failed. Please try again.";
+                return RedirectToAction(nameof(Index));
             }
             
-            // Email service 
-            var user = await _applicationUserService.GetUserByIdAsync(userId);
-
-            await _emailService.SendOrderConfirmationEmailAsync(toEmail: user.Email, shoppingCartVM.OrderHeader.Id,(decimal)shoppingCartVM.OrderHeader.OrderTotal);
-            // Clear the shopping cart for the user after creating the order
-            // await _shoppingCartService.ClearUserCartAsync(userId);
-
-            // Redirect the user to the OrderConfirmation action with the order ID as a route parameter
-            return RedirectToAction("OrderConfirmation", new { id = shoppingCartVM.OrderHeader.Id });
         }
 
         // Action method to display the order confirmation page after a successful order placement
         public async Task<IActionResult> OrderConfirmation(int id)
         {
+            // Retrieve the order header from DB based on the id 
+            var orderHeader = await _orderService.GetOrderByIdAsync(id, includeUser: true);
+
+            if(orderHeader == null)
+            {
+                return NotFound();
+            }
+
+            // Retrieve the userId from the authenticated user's claims
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+                
+            }
+
+            // Check if applicationUserId is the same as userId
+            if(orderHeader.ApplicationUserId != userId)
+            {
+                return RedirectToAction("AccessDenied", "Account", new { area = "Identity" });
+            }
+
+            try
+            {
+                // Stripe Payment validation
+
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+                // Check the Stripe Payment Status
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    await _orderService.UpdateStripePaymentAsync(id, session.Id, session.PaymentIntentId);
+                    // Update the order status
+                    await _orderService.UpdateOrderStatusAsync(id, SD.StatusApproved);
+                    TempData["Success"] = "Payment completed successfully! Your order has been confirmed.";
+                }
+                else
+                {
+                    TempData["Error"] = "Payment status is pending. Please contact support if you completed the payment.";
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                TempData["Error"] = "Unable to verify payment status. Please contact support with your order number.";
+            }
+
+            // Email service 
+            var user = await _applicationUserService.GetUserByIdAsync(userId);
+
+            await _emailService.SendOrderConfirmationEmailAsync(toEmail: user.Email, orderHeader.Id, (decimal)orderHeader.OrderTotal);
+            // Clear the shopping cart for the user after creating the order
+            // await _shoppingCartService.ClearUserCartAsync(userId);
+
+            // Redirect the user to the OrderConfirmation action with the order ID as a route parameter
+            //return RedirectToAction("OrderConfirmation", new { id = shoppingCartVM.OrderHeader.Id });
+
             return View(id);
         }
 
