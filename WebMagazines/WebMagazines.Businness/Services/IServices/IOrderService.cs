@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WebMagazines.Models;
 
-namespace WebMagazines.Businness.Services.IServices
+namespace WebMagazines.Business.Services.IServices
 {
     // Create order endpoints
     public interface IOrderService
@@ -17,13 +17,16 @@ namespace WebMagazines.Businness.Services.IServices
 
         // Get All Orders endpoint with optional filters for userId and status,
         // and options to include user and order details
-        Task<IEnumerable<OrderHeader>> GetAllOrderAsync(string? userId=null, string? status=null, bool includeUser = false, bool includeDetails = false);
+        Task<IEnumerable<OrderHeader>> GetAllOrderAsync(string? userId=null, string? status=null, bool includeUser = true, bool includeDetails = false);
 
-        // Update Order endopoint
+        // Update Order endpoint
         Task UpdateOrderAsync(OrderHeader orderHeader);
 
-        // Update Order Status endopoint.
+        // Update Order Status endpoint
         // When set to shipped - carrier and tracking number must be updated. These don't need to be updated every time
         Task UpdateOrderStatusAsync(int id, string orderStatus, string? carrier = null, string? trackingNumber = null );
+
+        // Update Stripe Payment endpoint
+        Task UpdateStripePaymentAsync(int orderId, string sessionId, string paymentIntentId);
     }
 }
