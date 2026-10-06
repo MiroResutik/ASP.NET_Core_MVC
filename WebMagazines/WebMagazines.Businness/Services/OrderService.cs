@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 using WebMagazines.Utility;
 
-namespace WebMagazines.Businness.Services
+namespace WebMagazines.Business.Services
 {
     public class OrderService : IOrderService
     {
@@ -120,6 +120,31 @@ namespace WebMagazines.Businness.Services
             }
 
             // Save changes
+            await _db.SaveChangesAsync();
+        }
+
+        // Implement the UpdateStripePayment method/interface
+        public async Task UpdateStripePaymentAsync(int orderId, string sessionId, string paymentIntentId)
+        {
+            // Retrieve the order
+            var order = await _db.OrderHeaders.FindAsync(orderId);
+
+            // If the Order is null throw exception
+            if (order == null)
+            {
+                throw new KeyNotFoundException($"Order {orderId} not found");
+            }
+            // if the sessionId is not null or empty then update the order
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                order.SessionId = sessionId;
+            }
+            // if the paymentIntentId is not null or empty then update the order
+            if (!string.IsNullOrEmpty(paymentIntentId))
+            {
+                order.PaymentIntentId = paymentIntentId;
+            }
+            // Update the payment once the payment is successful in Stripe 
             await _db.SaveChangesAsync();
         }
     }
