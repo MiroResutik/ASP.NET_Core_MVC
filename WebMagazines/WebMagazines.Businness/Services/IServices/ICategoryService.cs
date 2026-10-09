@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WebMagazines.Models;
 
-namespace WebMagazines.Businness.Services.IServices
+namespace WebMagazines.Business.Services.IServices
 {
     public interface ICategoryService
     {

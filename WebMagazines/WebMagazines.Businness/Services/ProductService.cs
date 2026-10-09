@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 
-namespace WebMagazines.Businness.Services
+namespace WebMagazines.Business.Services
 {
     // Endpoints for the ProductService class that implements the IProductService interface
     public class ProductService : IProductService

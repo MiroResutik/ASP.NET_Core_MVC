@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using WebMagazines.Businness.Services.IServices;
+using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
 
-namespace WebMagazines.Businness.Services
+namespace WebMagazines.Business.Services
 {
     // Endpoints for the CategoryService class that implements the ICategoryService interface
     public class CategoryService : ICategoryService
