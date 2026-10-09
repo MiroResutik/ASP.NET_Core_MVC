@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Mailjet.Api" Version="4.0.1" />
+    <PackageReference Include="Stripe.net" Version="53.0.0" />
   </ItemGroup>
 
   <ItemGroup>

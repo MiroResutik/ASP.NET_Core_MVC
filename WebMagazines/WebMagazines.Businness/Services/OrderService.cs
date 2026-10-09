@@ -1,11 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Stripe.Checkout;
+using Stripe.Climate;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using WebMagazines.Business.Services.IServices;
 using WebMagazines.DataAccess.Data;
 using WebMagazines.Models;
+using WebMagazines.Models.ViewModels;
 using WebMagazines.Utility;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebMagazines.Business.Services
 {
@@ -20,6 +24,11 @@ namespace WebMagazines.Business.Services
             _db = db;
         }
 
+        public Task<bool> CancelOrderWithRefundAsync(int orderId)
+        {
+            throw new NotImplementedException();
+        }
+
         // Implement the CreateOrderAsync method to create a new order in the database
         public async Task<OrderHeader> CreateOrderAsync(OrderHeader orderHeader)
         {
@@ -27,6 +36,64 @@ namespace WebMagazines.Business.Services
             await _db.SaveChangesAsync(); // Save changes to the database asynchronously
 
             return orderHeader; // Return the created orderHeader
+        }
+
+        public async Task<string> CreateStripeCheckoutSessionAsync(OrderHeader orderHeader, IEnumerable<ShoppingCart> cartItems, string domain)
+        {
+            if (orderHeader == null)
+            {
+                throw new ArgumentNullException(nameof(orderHeader));
+            }
+            if (cartItems == null || !cartItems.Any())
+            {
+                throw new ArgumentException("Cart items cannot be empty", nameof(cartItems));
+            }
+
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                // Stripe will redirect if payment is successful
+                SuccessUrl = domain + $"cart/OrderConfirmation?id={orderHeader.Id}",
+                CancelUrl = domain + "cart/index", // Redirect if user cancels the payment
+                LineItems = new List<SessionLineItemOptions>(),
+
+                Mode = "payment",
+                // Metadata links the stripe session back to internal orderId - essential for debugging
+                Metadata = new Dictionary<string, string>
+                    {
+                        {"OrderId", orderHeader.Id.ToString() }
+                    }
+            };
+
+            foreach (var item in cartItems)
+            {
+
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100),
+                        Currency = "gbp",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Name
+                        }
+                    },
+
+
+                    Quantity = item.Count,
+
+                };
+                options.LineItems.Add(sessionLineItem);
+            }
+            // Creating object of a session service that handles the checkout session on the stripe server
+            var service = new SessionService();
+            // Sending payment info to Stripe API by creating a checkout session which returns
+            // object with payment ID and URL 
+            Session session = service.Create(options);
+
+            await UpdateStripePaymentAsync(orderHeader.Id, session.Id, session.PaymentIntentId);
+
+            return session.Url;
         }
 
         // Implement the GetAllOrderAsync method to retrieve
@@ -108,11 +175,11 @@ namespace WebMagazines.Business.Services
                 // Set shipping date
                 order.ShippingDate = DateTime.UtcNow;
                 // Check if carrier and tracking number empty and if so update them
-                if(!string.IsNullOrEmpty(carrier))
+                if (!string.IsNullOrEmpty(carrier))
                 {
                     order.Carrier = carrier;
                 }
-                if(!string.IsNullOrEmpty(trackingNumber))
+                if (!string.IsNullOrEmpty(trackingNumber))
                 {
                     order.TrackingNumber = trackingNumber;
 
@@ -146,6 +213,27 @@ namespace WebMagazines.Business.Services
             }
             // Update the payment once the payment is successful in Stripe 
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<bool> VerifyStripePaymentAsync(OrderHeader orderHeader)
+        {
+            // Stripe Payment validation
+
+            var service = new SessionService();
+            Session session = service.Get(orderHeader.SessionId);
+            // Check the Stripe Payment Status
+            if (session.PaymentStatus.ToLower() == "paid")
+            {
+                await UpdateStripePaymentAsync(orderHeader.Id, session.Id, session.PaymentIntentId);
+                // Update the order status
+                await UpdateOrderStatusAsync(orderHeader.Id, SD.StatusApproved);
+                return true;
+            }
+            else
+            {
+                return false;
+
+            }
         }
     }
 }
