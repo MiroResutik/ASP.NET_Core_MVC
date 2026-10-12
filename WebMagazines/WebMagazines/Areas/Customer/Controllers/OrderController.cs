@@ -98,7 +98,7 @@ namespace WebMagazines.Areas.Controllers
 
             string successMessage;
 
-            // Recieve all of the status
+            // Receive all of the status
 
             switch(status)
             {
@@ -107,12 +107,36 @@ namespace WebMagazines.Areas.Controllers
                     successMessage = "Order processing started successfully.";
                     break;
                 case SD.StatusCancelled:
-                    await _orderService.UpdateOrderStatusAsync(OrderHeader.Id, status);
-                    successMessage = "Order cancelled successfully.";
-                    break;
+                    //await _orderService.UpdateOrderStatusAsync(OrderHeader.Id, status);
+                    //successMessage = "Order cancelled successfully.";
+                    //break;
                 case SD.StatusRefunded:
-                    await _orderService.UpdateOrderStatusAsync(OrderHeader.Id, status);
-                    successMessage = "Order refunded successfully.";
+                    try
+                    {
+                        bool refundIssued = await _orderService.CancelOrderWithRefundAsync(OrderHeader.Id);
+                        if (refundIssued)
+                        {
+                            successMessage = "Order cancelled and refund issued successfully. Funds will be returned to customer within 3 working days. ";
+                        }
+                        else
+                        {
+                            successMessage = "Order cancelled successfully. No payment was processed.";
+                        }
+
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // Business rule violation (e.g., trying to cancel shipped order)
+                        TempData["error"] = ex.Message;
+                        return RedirectToAction(nameof(Details), new { orderId = OrderHeader.Id });
+                    }
+                    catch (Stripe.StripeException ex)
+                    {
+                        // Refund failed - order is still cancelled but admin needs to manually refund
+                        TempData["error"] = $"Order cancelled but refund failed: {ex.Message}. Please process refund manually in Stripe Dashboard.";
+                        return RedirectToAction(nameof(Details), new { orderId = OrderHeader.Id });
+                    }
+
                     break;
                 case SD.StatusShipped:
                     if (string.IsNullOrEmpty(OrderHeader.Carrier) || string.IsNullOrEmpty(OrderHeader.TrackingNumber))
