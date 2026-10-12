@@ -28,10 +28,10 @@ namespace WebMagazines.Areas.Customer.Controllers
         // Cart Constructor to inject the IProductService,IShoppingCartService,
         // IApplicationUserService, and IOrderService dependencies
         public CartController(
-            IProductService productService, 
-            IShoppingCartService shoppingCartService, 
-            IApplicationUserService applicationUserService, 
-            IOrderService orderService, 
+            IProductService productService,
+            IShoppingCartService shoppingCartService,
+            IApplicationUserService applicationUserService,
+            IOrderService orderService,
             IEmailService emailService)
         {
             _productService = productService;
@@ -110,7 +110,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             shoppingCartVM.ShoppingCartList = cartItems;
             shoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             shoppingCartVM.OrderHeader.ApplicationUserId = userId;
-     
+
 
             // Calculate the total order amount based on the cart itmes and their quantities
             foreach (var cart in shoppingCartVM.ShoppingCartList)
@@ -124,11 +124,11 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Create a list of OrderDetails based on the shopping cart items using projection with LINQ
             shoppingCartVM.OrderHeader.OrderDetails = shoppingCartVM.ShoppingCartList
                 .Select(cart => new OrderDetails
-            {
-                ProductId = cart.ProductId,
-                Count = cart.Count,
-                Price = cart.Price
-            }).ToList();
+                {
+                    ProductId = cart.ProductId,
+                    Count = cart.Count,
+                    Price = cart.Price
+                }).ToList();
 
             // Create Order
 
@@ -136,67 +136,26 @@ namespace WebMagazines.Areas.Customer.Controllers
             await _orderService.CreateOrderAsync(shoppingCartVM.OrderHeader);
 
             // Stripe session object - Gather the payment before Email service
-            
+
             try
             {
                 var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
-                var options = new Stripe.Checkout.SessionCreateOptions
-                {
-                    // Stripe will redirect if payment is successful
-                    SuccessUrl = domain+ $"cart/OrderConfirmation?id={shoppingCartVM.OrderHeader.Id}",
-                    CancelUrl =domain+ "cart/index", // Redirect if user cancels the payment
-                    LineItems = new List<SessionLineItemOptions>(),
+                var sessionUrl = await _orderService.CreateStripeCheckoutSessionAsync(shoppingCartVM.OrderHeader, shoppingCartVM.ShoppingCartList, domain);
 
-                    Mode = "payment",
-                    // Metadata links the stripe session back to internal orderId - essential for debugging
-                    Metadata = new Dictionary<string, string>
-                    {
-                        {"OrderId", shoppingCartVM.OrderHeader.Id.ToString() }
-                    }
-                };
-
-                foreach (var item in shoppingCartVM.ShoppingCartList)
-                {
-
-                    var sessionLineItem = new SessionLineItemOptions
-                    {
-                        PriceData = new SessionLineItemPriceDataOptions
-                        {
-                            UnitAmount = (long)(item.Price * 100),
-                            Currency = "gbp",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = item.Product.Name
-                            }
-                        },
-
-
-                        Quantity = item.Count,
-
-                    };
-                    options.LineItems.Add(sessionLineItem);
-                }
-                // Creating object of a session service that handles the checkout session on the stripe server
-                var service = new SessionService();
-                // Sending payment info to Stripe API by creating a checkout session which returns
-                // object with payment ID and URL 
-                Session session = service.Create(options);
-
-                await _orderService.UpdateStripePaymentAsync(shoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
                 // Redirect to Stripe to collect the payment
-                Response.Headers.Append("Location", session.Url);
+                Response.Headers.Append("Location", sessionUrl);
                 return new StatusCodeResult(303);
 
 
             }
-            catch (Exception ex)
+            catch (StripeException ex)
             {
 
                 TempData["Error"] = "Payment processing failed. Please try again.";
                 return RedirectToAction(nameof(Index));
             }
-            
+
         }
 
         // Action method to display the order confirmation page after a successful order placement
@@ -205,7 +164,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Retrieve the order header from DB based on the id 
             var orderHeader = await _orderService.GetOrderByIdAsync(id, includeUser: true);
 
-            if(orderHeader == null)
+            if (orderHeader == null)
             {
                 return NotFound();
             }
@@ -217,37 +176,29 @@ namespace WebMagazines.Areas.Customer.Controllers
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
-                
+
             }
 
             // Check if applicationUserId is the same as userId
-            if(orderHeader.ApplicationUserId != userId)
+            if (orderHeader.ApplicationUserId != userId)
             {
                 return RedirectToAction("AccessDenied", "Account", new { area = "Identity" });
             }
 
             try
             {
-                // Stripe Payment validation
+                var result = await _orderService.VerifyStripePaymentAsync(orderHeader);
 
-                var service = new SessionService();
-                Session session = service.Get(orderHeader.SessionId);
-                // Check the Stripe Payment Status
-                if (session.PaymentStatus.ToLower() == "paid")
+                if (result)
                 {
-                    await _orderService.UpdateStripePaymentAsync(id, session.Id, session.PaymentIntentId);
-                    // Update the order status
-                    await _orderService.UpdateOrderStatusAsync(id, SD.StatusApproved);
                     TempData["Success"] = "Payment completed successfully! Your order has been confirmed.";
                 }
                 else
                 {
                     TempData["Error"] = "Payment status is pending. Please contact support if you completed the payment.";
-
                 }
-
             }
-            catch (Exception ex)
+            catch (StripeException ex)
             {
 
                 TempData["Error"] = "Unable to verify payment status. Please contact support with your order number.";
@@ -286,7 +237,7 @@ namespace WebMagazines.Areas.Customer.Controllers
                     // Increase the count of the cart item and save the changes
                     cart.Count++;
 
-                    
+
                     await _shoppingCartService.UpdateCartAsync(cart); // Update the cart item in the database
                     await UpdateCartSessionAsync();
 
