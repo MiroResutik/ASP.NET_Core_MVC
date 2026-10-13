@@ -135,6 +135,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             // Call the CreateOrderAsync method of the IOrderService to create a new order based on the ShoppingCartVM
             await _orderService.CreateOrderAsync(shoppingCartVM.OrderHeader);
 
+
             // Stripe session object - Gather the payment before Email service
 
             try
@@ -142,6 +143,22 @@ namespace WebMagazines.Areas.Customer.Controllers
                 var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
                 var sessionUrl = await _orderService.CreateStripeCheckoutSessionAsync(shoppingCartVM.OrderHeader, shoppingCartVM.ShoppingCartList, domain);
+
+                // Clear the shopping cart for the user after creating the order
+                await _shoppingCartService.ClearCartAsync(userId);
+
+                // Reset session cart count so UI/clients reading session see 0
+                HttpContext.Session.SetInt32(SD.SessionCart, 0);
+
+                // Also remove any client-side cookie fallback that may be used to store cart count
+                try
+                {
+                    Response.Cookies.Delete(SD.SessionCart);
+                }
+                catch
+                {
+                    // ignore cookie delete errors to avoid breaking post-payment flow
+                }
 
                 // Redirect to Stripe to collect the payment
                 Response.Headers.Append("Location", sessionUrl);
@@ -191,25 +208,24 @@ namespace WebMagazines.Areas.Customer.Controllers
 
                 if (result)
                 {
-                    TempData["Success"] = "Payment completed successfully! Your order has been confirmed.";
+                    TempData["success"] = "Payment completed successfully! Your order has been confirmed.";
                 }
                 else
                 {
-                    TempData["Error"] = "Payment status is pending. Please contact support if you completed the payment.";
+                    TempData["error"] = "Payment status is pending. Please contact support if you completed the payment.";
                 }
             }
             catch (StripeException ex)
             {
 
-                TempData["Error"] = "Unable to verify payment status. Please contact support with your order number.";
+                TempData["error"] = "Unable to verify payment status. Please contact support with your order number.";
             }
 
             // Email service 
             var user = await _applicationUserService.GetUserByIdAsync(userId);
 
             await _emailService.SendOrderConfirmationEmailAsync(toEmail: user.Email, orderHeader.Id, (decimal)orderHeader.OrderTotal);
-            // Clear the shopping cart for the user after creating the order
-            // await _shoppingCartService.ClearUserCartAsync(userId);
+            
 
             // Redirect the user to the OrderConfirmation action with the order ID as a route parameter
             //return RedirectToAction("OrderConfirmation", new { id = shoppingCartVM.OrderHeader.Id });
