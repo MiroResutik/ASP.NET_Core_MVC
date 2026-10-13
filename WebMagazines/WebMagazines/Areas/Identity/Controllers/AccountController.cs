@@ -94,16 +94,24 @@ namespace WebMagazines.Views.Identity.Controllers
         {
             // Create a new instance of RegisterVM and
             // populate the RoleList with available roles
-            var model = new RegisterVM
+            var model = new RegisterVM();
+
+            // Only if Admin is logged in - Populate the RoleList with available roles for registration
+            if (User.IsInRole(SD.RoleAdmin))
             {
                 // Populate the RoleList with available roles for registration
-                RoleList =
+                model.RoleList =
                 [
-                    new SelectListItem { Text = SD.RoleCustomer, Value = SD.RoleCustomer },
-                    new SelectListItem { Text = SD.RoleAdmin, Value = SD.RoleAdmin },
-                    new SelectListItem { Text = SD.RoleEmployee, Value = SD.RoleEmployee }
-                ]
-            };
+                new SelectListItem { Text = SD.RoleCustomer, Value = SD.RoleCustomer },
+                new SelectListItem { Text = SD.RoleAdmin, Value = SD.RoleAdmin },
+                new SelectListItem { Text = SD.RoleEmployee, Value = SD.RoleEmployee }
+                ];
+            }
+            else
+            {
+                // can be an empty list -  I am not displaying it in UI anyway
+                model.RoleList = new List<SelectListItem>();
+            }
             // Store the return URL in ViewData to redirect the user after successful login
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -117,6 +125,8 @@ namespace WebMagazines.Views.Identity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM registerVM, string? returnUrl = null)
         {
+            // Comment this if roles exist statement if using IDbInitializer to seed the admin Account
+            /*
             // Check if the roles exist, and create them if they don't 
             if (!await _roleManager.RoleExistsAsync(SD.RoleCustomer))
             {
@@ -124,6 +134,7 @@ namespace WebMagazines.Views.Identity.Controllers
                 await _roleManager.CreateAsync(new IdentityRole(SD.RoleCustomer));
                 await _roleManager.CreateAsync(new IdentityRole(SD.RoleEmployee));
             }
+            */
             // Check if the model state is valid
             if (ModelState.IsValid)
             {
@@ -144,29 +155,34 @@ namespace WebMagazines.Views.Identity.Controllers
                 // If the user creation is successful, sign in the user and redirect to the home page
                 if (result.Succeeded)
                 {
-                    // Assign the selected role to the user
-                    if (!string.IsNullOrEmpty(registerVM.Role))
+                    // Assign the selected role to the user if logged in as Admin
+                    if (User.IsInRole(SD.RoleAdmin) && !string.IsNullOrEmpty(registerVM.Role))
                     {
                         // Add the user to the selected role
                         await _userManager.AddToRoleAsync(user, registerVM.Role);
+                        TempData["success"] = $"User '{user.Name}' created successfully with role '{registerVM.Role}'.";
+                        // REDIRECT MAY NOT WORK!!!! CHECK THIS LINE
+                        return RedirectToAction("Index","User", new { area = "Customer" });
                     }
                     else
                     {
                         // If no role is selected, assign the default role (Customer)
                         await _userManager.AddToRoleAsync(user, SD.RoleCustomer);
-                    }
-                    // User has been created - Sign in the user
-                    await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    // Set the Cart session with value of 0 - as the user just created the account
-                    //HttpContext.Session.SetInt32(SD.SessionCart, 0);
+                        // User has been created - Sign in the user
+                        await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    // If a return URL is provided and it's a local URL, redirect to that URL
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
+                        // Set the Cart session with value of 0 - as the user just created the account
+                        HttpContext.Session.SetInt32(SD.SessionCart, 0);
+
+                        // If a return URL is provided and it's a local URL, redirect to that URL
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
+                        return RedirectToAction("Index", "Home", new { area = "Customer" });
                     }
-                    return RedirectToAction("Index", "Home", new {area="Customer"});
+
                 }
                 // If there are errors, add them to the model state
                 foreach (var error in result.Errors)
