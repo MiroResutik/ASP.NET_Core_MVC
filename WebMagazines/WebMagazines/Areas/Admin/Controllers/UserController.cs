@@ -56,7 +56,7 @@ namespace WebMagazines.Areas.Admin.Controllers
                     Value = u.Name
                 })
             };
-            // Pupulate with default role for that user
+            // Populate with default role for that user
             RoleVM.ApplicationUser.Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
             return View(RoleVM);
@@ -74,7 +74,7 @@ namespace WebMagazines.Areas.Admin.Controllers
                 return Json(new { success = false, message = "User not found" });
             }
 
-            // Pupulate with default role for that user
+            // Populate with default role for that user
             string oldRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
             if (!(roleManagmentVM.ApplicationUser.Role == oldRole))
@@ -175,11 +175,11 @@ namespace WebMagazines.Areas.Admin.Controllers
             if (await _userManager.IsLockedOutAsync(user))
             {
                 await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
-                return Json(new { success = true, message = "User locked successfully" });
+                return Json(new { success = true, message = "User unlocked successfully!" });
             }else
             {
                 await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow.AddDays(1000));
-                return Json(new { success = true, message = "User unlocked successfully" });
+                return Json(new { success = true, message = "User locked successfully!" });
 
             }
             //return Json(new { data = user });
