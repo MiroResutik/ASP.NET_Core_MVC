@@ -30,19 +30,31 @@ function loadDataTable() {
                     var lockout = new Date(data.lockoutEnd).getTime();
                     var isLocked = lockout > today;
 
-                    return `<div class="d-flex gap-2 justify-content-end">
-                            <a onclick="LockUnlock('${data.id}')" class="btn btn-sm ${isLocked ? 'btn-danger' : 'btn-success'}">
-                                 <i class="bi bi-${isLocked ? 'lock' : 'unlock'}-fill"></i> ${isLocked ? 'Lock' : 'Unlock'}
-                            </a>
-                            <a href="/user/RoleManagement?userId=${data.id}" class="btn btn-sm btn-outline-secondary">
-                                 <i class="bi bi-person-badge"></i> Role
-                            </a>
-                              <a href="/user/ChangePassword?userId=${data.id}" class="btn btn-sm btn-outline-danger">
-                                 <i class="bi bi-key-fill"></i> Change Password
-                            </a>
-                            </a>
 
-                        </div > `;
+return `
+    <div class="user-action-buttons d-flex justify-content-end align-items-center gap-2 flex-wrap">
+
+        <button type="button"
+                onclick="LockUnlock('${data.id}')"
+                class="btn btn-sm user-action-btn ${isLocked ? 'user-action-unlock' : 'user-action-lock'}">
+            <i class="bi bi-${isLocked ? 'unlock-fill' : 'lock-fill'}"></i>
+            <span>${isLocked ? 'Unlock' : 'Lock'}</span>
+        </button>
+
+        <a href="/user/RoleManagement?userId=${encodeURIComponent(data.id)}"
+           class="btn btn-sm user-action-btn user-action-role">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Role</span>
+        </a>
+
+        <a href="/user/ChangePassword?userId=${encodeURIComponent(data.id)}"
+           class="btn btn-sm user-action-btn user-action-password">
+            <i class="bi bi-key-fill"></i>
+            <span>Change Password</span>
+        </a>
+
+    </div>`;
+
                 }
             }
 
