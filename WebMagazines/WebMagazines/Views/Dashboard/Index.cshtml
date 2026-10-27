@@ -1,151 +1,268 @@
 ﻿@model DashboardVM
 
 <div class="mb-4">
-    <h1 class="h4 fw-bold">Welcome back!</h1>
-    <p class="text-secondary small mb-0">Here's what's happening with your store.</p>
+    <h1 class="h4 fw-bold mb-1">Welcome back!</h1>
+    <p class="text-secondary small mb-0">
+        Here's what's happening with your store.
+    </p>
 </div>
 
 <!-- Stats Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-3">
-        <div class="card border shadow-sm h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #dbeafe;">
-                        <i class="bi bi-currency-pound" style="color: #3b82f6;"></i>
-                    </div>
-                    <span class="text-uppercase fw-semibold text-secondary" style="font-size: 0.6rem; letter-spacing: 0.05em;">Revenue</span>
+<div class="row g-3 g-xl-4 mb-4">
+
+    <!-- Revenue -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="dashboard-stat-card h-100">
+
+            <div class="stat-card-top">
+                <div class="stat-icon revenue">
+                    <i class="bi bi-currency-pound"></i>
                 </div>
-                <p class="h4 fw-bold mb-0">@Model.TotalRevenue.ToString("C")</p>
-                <p class="text-secondary mb-0" style="font-size: 0.75rem;">From approved orders</p>
+
+                <span class="stat-label">Revenue</span>
             </div>
+
+            <div class="stat-value">
+                @Model.TotalRevenue.ToString("C")
+            </div>
+
+            <div class="stat-footer">
+                <span>
+                    <i class="bi bi-graph-up-arrow me-1"></i>
+                    From approved orders
+                </span>
+            </div>
+
         </div>
     </div>
-    <div class="col-sm-6 col-lg-3">
+
+
+    <!-- Orders -->
+    <div class="col-sm-6 col-xl-3">
         <a asp-area="Admin"
            asp-controller="Order"
            asp-action="Index"
-           asp-route-status="all" class="card border shadow-sm h-100 text-decoration-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #d1fae5;">
-                        <i class="bi bi-truck" style="color: #10b981;"></i>
-                    </div>
-                    <span class="text-uppercase fw-semibold text-secondary" style="font-size: 0.6rem; letter-spacing: 0.05em;">Orders</span>
+           asp-route-status="all"
+           class="dashboard-stat-card h-100 text-decoration-none">
+
+            <div class="stat-card-top">
+                <div class="stat-icon orders">
+                    <i class="bi bi-cart3"></i>
                 </div>
-                <p class="h4 fw-bold text-dark mb-0">@Model.TotalOrders</p>
-                <p class="text-secondary mb-0" style="font-size: 0.75rem;">View all orders &rarr;</p>
+
+                <span class="stat-label">Orders</span>
             </div>
+
+            <div class="stat-value">
+                @Model.TotalOrders
+            </div>
+
+            <div class="stat-footer">
+                <span>
+                    View all orders
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </span>
+            </div>
+
         </a>
     </div>
-    <div class="col-sm-6 col-lg-3">
+
+
+    <!-- Products -->
+    <div class="col-sm-6 col-xl-3">
         <a asp-area="Admin"
            asp-controller="Product"
-           asp-action="Index" class="card border shadow-sm h-100 text-decoration-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #f3e8ff;">
-                        <i class="bi bi-book" style="color: #8b5cf6;"></i>
-                    </div>
-                    <span class="text-uppercase fw-semibold text-secondary" style="font-size: 0.6rem; letter-spacing: 0.05em;">Products</span>
+           asp-action="Index"
+           class="dashboard-stat-card h-100 text-decoration-none">
+
+            <div class="stat-card-top">
+                <div class="stat-icon products">
+                    <i class="bi bi-book"></i>
                 </div>
-                <p class="h4 fw-bold text-dark mb-0">@Model.TotalProducts</p>
-                <p class="text-secondary mb-0" style="font-size: 0.75rem;">Manage products &rarr;</p>
+
+                <span class="stat-label">Products</span>
             </div>
+
+            <div class="stat-value">
+                @Model.TotalProducts
+            </div>
+
+            <div class="stat-footer">
+                <span>
+                    Manage products
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </span>
+            </div>
+
         </a>
     </div>
-    <div class="col-sm-6 col-lg-3">
+
+
+    <!-- Users -->
+    <div class="col-sm-6 col-xl-3">
         <a asp-area="Admin"
            asp-controller="User"
-           asp-action="Index" class="card border shadow-sm h-100 text-decoration-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #fef3c7;">
-                        <i class="bi bi-people" style="color: #f59e0b;"></i>
-                    </div>
-                    <span class="text-uppercase fw-semibold text-secondary" style="font-size: 0.6rem; letter-spacing: 0.05em;">Users</span>
+           asp-action="Index"
+           class="dashboard-stat-card h-100 text-decoration-none">
+
+            <div class="stat-card-top">
+                <div class="stat-icon users">
+                    <i class="bi bi-people"></i>
                 </div>
-                <p class="h4 fw-bold text-dark mb-0">@Model.TotalUsers</p>
-                <p class="text-secondary mb-0" style="font-size: 0.75rem;">Manage users &rarr;</p>
+
+                <span class="stat-label">Users</span>
             </div>
+
+            <div class="stat-value">
+                @Model.TotalUsers
+            </div>
+
+            <div class="stat-footer">
+                <span>
+                    Manage users
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </span>
+            </div>
+
         </a>
     </div>
+
 </div>
+
 
 <!-- Charts Row 1 -->
-<div class="row g-3 mb-4">
+<div class="row g-3 g-xl-4 mb-4">
+
+    <!-- Revenue Trend -->
     <div class="col-lg-6">
-        <div class="card border shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up me-1" style="color: #3b82f6;"></i> Revenue Trend</h6>
-                <div style="height: 250px;">
-                    <canvas id="revenueChart"></canvas>
+        <div class="dashboard-chart-card h-100">
+
+            <div class="chart-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chart-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="mb-1 fw-bold">Revenue Trend</h6>
+                        <p class="mb-0 text-secondary">
+                            Monthly revenue performance
+                        </p>
+                    </div>
                 </div>
+
+                <span class="chart-badge">
+                    Revenue
+                </span>
             </div>
+
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+
         </div>
     </div>
+
+
+    <!-- Orders Per Month -->
     <div class="col-lg-6">
-        <div class="card border shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-semibold mb-3"><i class="bi bi-bar-chart me-1" style="color: #10b981;"></i> Orders Per Month</h6>
-                <div style="height: 250px;">
-                    <canvas id="ordersChart"></canvas>
+        <div class="dashboard-chart-card h-100">
+
+            <div class="chart-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chart-icon">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="mb-1 fw-bold">Orders Per Month</h6>
+                        <p class="mb-0 text-secondary">
+                            Monthly order volume
+                        </p>
+                    </div>
                 </div>
+
+                <span class="chart-badge">
+                    Orders
+                </span>
             </div>
+
+            <div class="chart-container">
+                <canvas id="ordersChart"></canvas>
+            </div>
+
         </div>
     </div>
+
 </div>
+
 
 <!-- Charts Row 2 -->
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="card border shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-semibold mb-3"><i class="bi bi-circle-half me-1" style="color: #f59e0b;"></i> Order Status</h6>
-                <div style="height: 300px;" class="d-flex align-items-center justify-content-center">
-                    <canvas id="statusChart"></canvas>
+<div class="row g-3 g-xl-4 mb-4">
+
+    <!-- Order Status -->
+    <div class="col-lg-6">
+        <div class="dashboard-chart-card h-100">
+
+            <div class="chart-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chart-icon">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="mb-1 fw-bold">Order Status</h6>
+                        <p class="mb-0 text-secondary">
+                            Current order distribution
+                        </p>
+                    </div>
                 </div>
+
+                <span class="chart-badge">
+                    Status
+                </span>
             </div>
+
+            <div class="chart-container chart-container-large d-flex align-items-center justify-content-center">
+                <canvas id="statusChart"></canvas>
+            </div>
+
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card border shadow-sm">
-            <div class="card-body">
-                <h6 class="fw-semibold mb-3"><i class="bi bi-tags me-1" style="color: #8b5cf6;"></i> Products by Category</h6>
-                <div style="height: 300px;" class="d-flex align-items-center justify-content-center">
-                    <canvas id="categoryChart"></canvas>
+
+
+    <!-- Products by Category -->
+    <div class="col-lg-6">
+        <div class="dashboard-chart-card h-100">
+
+            <div class="chart-card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chart-icon">
+                        <i class="bi bi-tags-fill"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="mb-1 fw-bold">Products by Category</h6>
+                        <p class="mb-0 text-secondary">
+                            Product catalogue distribution
+                        </p>
+                    </div>
                 </div>
+
+                <span class="chart-badge">
+                    Products
+                </span>
             </div>
+
+            <div class="chart-container chart-container-large d-flex align-items-center justify-content-center">
+                <canvas id="categoryChart"></canvas>
+            </div>
+
         </div>
     </div>
+
 </div>
 
-
 @section Scripts {
-
-    <script>
-        const ctx = document.getElementById('myChart');
-        $.getJSON('/Dashboard/GetChartData', function(data) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.monthlyRevenue.map(r => r.label),
-                    datasets: [{
-                        label: 'Revenue',
-                        data: data.monthlyRevenue.map(r => r.revenue),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        })
-
-        
-    </script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
 }
