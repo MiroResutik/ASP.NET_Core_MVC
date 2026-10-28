@@ -1,8 +1,71 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<Product>
+<partial name="_Hero" />
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Catalog Section -->
+<div class="container py-5" id="catalog">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">My Collection</h2>
+        <!-- TODO: Display dynamic magazine count here -->
+        <p class="text-secondary mb-0">Explore all @Model.Count() magazines in my catalog</p>
+    </div>
+
+    <!-- Magazine Grid -->
+    @if (Model.Any())
+    {
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+            @foreach (var product in Model)
+            {
+
+                <div class="col">
+                    <div class="card h-100 border shadow-sm book-card">
+                        <a asp-action="Details" asp-route-productId="@product.Id" class="text-decoration-none">
+                            <div style="aspect-ratio: 3/4; overflow: hidden;">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" class="card-img-top h-100 w-100 object-fit-cover" alt="@product.Name" />
+                                }
+                                else
+                                {
+                                                                    
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                                    <i class="bi bi-book display-3 text-secondary"></i>
+                                </div>
+                                }
+                            </div>
+                        </a>
+                        <div class="card-body">
+                            
+                            <span class="badge bg-secondary mb-2">@(product.Category?.Name ?? "Uncategorized")</span>
+                            <h6 class="card-title fw-semibold mb-2" style="min-height: 2.5rem;">
+                                <!-- TODO: Add link to details page and display product title -->
+                                <a href="#" class="text-decoration-none text-dark">
+                                    @product.Name
+                                </a>
+                            </h6>
+                            <!-- TODO: Display product author -->
+                            <p class="text-secondary small mb-2">by @product.Author</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <!-- TODO: Display product price -->
+                                    <span class="fw-bold text-success">@product.Price.ToString("C")</span>
+                                    @if (product.ListPrice > product.Price)
+                                    {
+                                        <small class="text-decoration-line-through text-muted ms-1">@product.ListPrice.ToString("C")</small>
+                                    }
+                                    
+                                </div>
+                                <a asp-action="Details" asp-route-productId="@product.Id" class="btn btn-sm btn-outline-dark">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
+<partial name="_Newsletter" />
+
