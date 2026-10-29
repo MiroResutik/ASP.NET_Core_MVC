@@ -31,6 +31,7 @@ namespace WebMagazines.Areas.Admin.Controllers
             _userService = userService;
         }
 
+        // GET: UserController
         public IActionResult Index()
         {
             return View();

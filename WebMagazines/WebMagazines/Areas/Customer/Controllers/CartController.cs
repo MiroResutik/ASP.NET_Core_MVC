@@ -330,6 +330,7 @@ namespace WebMagazines.Areas.Customer.Controllers
             return Ok(new { success = true }); // Return a JSON response indicating success
         }
 
+        // Private method to update the cart session with the current count of items in the shopping cart
         private async Task UpdateCartSessionAsync()
         {
             // Retrieve user Id from the claims of the logged in user 

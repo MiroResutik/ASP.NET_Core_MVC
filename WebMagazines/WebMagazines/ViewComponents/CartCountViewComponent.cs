@@ -10,10 +10,12 @@ namespace WebMagazines.ViewComponents
         // Inject Shopping cart service in the constructor
         private readonly IShoppingCartService _shoppingCartService;
 
+        // Constructor for the CartCountViewComponent class that takes in IShoppingCartService as a parameter
         public CartCountViewComponent(IShoppingCartService shoppingCartService)
         {
             _shoppingCartService = shoppingCartService;
         }
+        // Method to invoke the view component asynchronously
         public async Task<IViewComponentResult> InvokeAsync()
         {
             // Check if the user is Authenticated
@@ -42,6 +44,7 @@ namespace WebMagazines.ViewComponents
             // Retrieve the user Id value
             var sessionCount = HttpContext.Session.GetInt32(SD.SessionCart);
 
+            // If the session has value - return it
             if (sessionCount.HasValue)
             {
 

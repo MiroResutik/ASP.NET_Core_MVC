@@ -72,12 +72,13 @@ namespace WebMagazines.Areas.Controllers
 
             }
 
-            // 
+            // Update the order details in the database using the order service
             await _orderService.UpdateOrderAsync(orderHeaderFromDb);
 
-            // TODO:Success toast is not working currently - FIXED
+            // Set a success message in TempData to be displayed on the next page
             TempData["Success"] = "Order Details Updated Successfully.";
 
+            // Redirect to the Details action with the updated order ID
             return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
         }
 
@@ -153,13 +154,14 @@ namespace WebMagazines.Areas.Controllers
                     TempData["Error"] = "Invalid status update.";
                     return RedirectToAction(nameof(Details), new { orderId = OrderHeader.Id });
             }
-            // TODO:Success toast is not working currently
+            // Set a success message in TempData to be displayed on the next page
             TempData["Success"] = successMessage;
 
+            // Redirect to the Details action with the updated order ID
             return RedirectToAction(nameof(Details), new { orderId = OrderHeader.Id });
         }
 
-        // POST method to handle the form submission for deleting a product
+        // API region for AJAX calls to retrieve data from the server without refreshing the page
         #region API CALLS 
 
         // GET method to retrieve all products from the database and return them as JSON data

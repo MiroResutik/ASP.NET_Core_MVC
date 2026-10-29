@@ -19,6 +19,7 @@ namespace WebMagazines.Areas.Admin.Controllers
             _db = db;
         }
 
+        // GET: Admin/Dashboard
         public async Task<IActionResult> Index()
         {
             var orders = await _db.OrderHeaders.ToListAsync();
